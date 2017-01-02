@@ -1,0 +1,203 @@
+body {
+  overflow-x: hidden;
+}
+
+nav {
+  background-color: #B0C4DE;
+}
+
+.top-margin {
+  margin-top: 3%;
+}
+
+.gsi {
+  text-align: center;
+  font-size: 28px;
+  color: #47746F;
+  font-family: courier;
+}
+
+
+.title-font {
+  font-family: 'Syncopate', serif;
+}
+
+.centered {
+  // "-moz-min-content" for Mozilla FireFox and "fit-content" for Google Chrome.center the Gooogle Sign-in button.
+  margin-left: auto;
+  margin-right: auto;
+  width: -moz-fit-content;
+  width: fit-content;
+  display: inline;
+}
+
+div.header-margin {
+  width: 100%;
+  height: 52px;
+}
+
+div.content-top-margin {
+  width:100%;
+  height: 28px;
+}
+
+.vertical-margins {
+  margin-top: 8%;
+  margin-bottom: 8%;
+}
+
+/*navbar brand icon*/
+img.icon {
+  margin: 0 auto;
+  height: 100%;
+}
+
+/*demo button*/
+.demo {
+	width: 220px;
+	height: 40px;
+	background-color: lightblue;
+	border: 2px lightblue solid;
+	text-align: center;
+	padding-top: 8px;
+}
+
+.demo:hover {
+  border: 2px #b3d5f7 solid;
+  border-style: groove;
+  cursor: pointer;
+}
+
+.margin-on-top {
+  // Vertically center text within button.
+  position: relative;
+  top: 70px;
+}
+
+/*chart type icons*/
+img.chart-icons {
+  height: 42px;
+}
+
+/* Demo button text */
+.trial-text {
+  color: darkcyan;
+  font-weight: 700;
+}
+
+/* Flash text*/
+.flash {
+  left: 50%;
+  top: 14%;
+  /* the width of the text is 204px; change if needed */
+  margin-left: -102px;
+  position: absolute;
+  background-color: yellow;
+}
+
+/*Originally hidden text for symbol not found.*/
+.not-found {
+  position: fixed;
+  font-family: 'Syncopate', serif;
+  font-size: 16px;
+  font-weight: bold;
+  background-color: yellow;
+  padding: 10px;
+  border: 1px black solid;
+  border-radius: 3px;
+  top: -100%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.not-found.active {
+  z-index: 1031;
+  animation-name: slideInFromTop;
+  animation-duration: 4s;
+}
+
+/* Timer */
+span.timer {
+  color: black;
+  background: yellow;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+}
+
+/* Spinner */
+
+.spinner-wrapper {
+  height: 200px;
+}
+.spinner {
+  margin: 0 auto;
+  width: 50%;
+  height: 50%;
+  text-align: center;
+  font-size: 10px;
+  top: 50%;
+  left: 50%;
+  transform: translateY(-50%) translateX(-50%);
+  position: absolute;
+}
+
+.spinner > div {
+  background-color: #333;
+  height: 100%;
+  width: 6px;
+  display: inline-block;
+
+  -webkit-animation: sk-stretchdelay 1.2s infinite ease-in-out;
+  animation: sk-stretchdelay 1.2s infinite ease-in-out;
+}
+
+.spinner .rect2 {
+  -webkit-animation-delay: -1.1s;
+  animation-delay: -1.1s;
+}
+
+.spinner .rect3 {
+  -webkit-animation-delay: -1.0s;
+  animation-delay: -1.0s;
+}
+
+.spinner .rect4 {
+  -webkit-animation-delay: -0.9s;
+  animation-delay: -0.9s;
+}
+
+.spinner .rect5 {
+  -webkit-animation-delay: -0.8s;
+  animation-delay: -0.8s;
+}
+
+@-webkit-keyframes sk-stretchdelay {
+  0%, 40%, 100% { -webkit-transform: scaleY(0.4) }
+  20% { -webkit-transform: scaleY(1.0) }
+}
+
+@keyframes sk-stretchdelay {
+  0%, 40%, 100% {
+    transform: scaleY(0.4);
+    -webkit-transform: scaleY(0.4);
+  }  20% {
+    transform: scaleY(1.0);
+    -webkit-transform: scaleY(1.0);
+  }
+}
+
+
+@-webkit-keyframes slideInFromTop {
+  0% { top: -100%; }
+  25% { top: 0%; }
+  75% { top: 0%; }
+  100% { top: -100%; }
+}
+
+@keyframes slideInFromTop {
+  0% { top: -100%; }
+  25% { top: 0%; }
+  75% { top: 0%; }
+  100% { top: -100%; }
+}
