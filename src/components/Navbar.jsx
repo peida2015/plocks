@@ -1,21 +1,46 @@
 import React, { Component } from 'react';
 import logo from '../../public/logo2.png';
-// import firebase from 'firebase';
-
+import { Container } from 'flux/utils';
+import CurrentUserStore from '../stores/CurrentUserStore';
+import FirebaseStore from '../stores/FirebaseStore';
 
 
 class Navbar extends Component {
+  static getStores() {
+    return [FirebaseStore, CurrentUserStore];
+  }
+
+  static calculateState() {
+    return {
+       firebase: FirebaseStore.getState(),
+       currentUser: CurrentUserStore.getState()
+    }
+  }
+
+  constructor(props) {
+    super(props);
+    this.signOut = this.signOut.bind(this);
+  }
+
   componentWillMount() {
   }
 
+  signOut() {
+    this.state.firebase.get("auth")().signOut();
+  }
+
+  componentWillUpdate(nextProps, nextState) {
+  }
+
   render() {
-    let user = this.props.user;
+    let user = this.state.currentUser.get('currentUser');
     let showName = user ? (
       <li>{"Hi, "+ user.displayName}</li>) : "";
 
     let logoutButton = user ?
     (<li id='g-signin3'>
-        <a className='page-scroll'>Logout</a>
+        <a className='page-scroll'
+            onClick={ this.signOut }>Logout</a>
       </li>) : "";
 
     return (
@@ -55,4 +80,4 @@ class Navbar extends Component {
   }
 }
 
-export default Navbar;
+export default Container.create(Navbar);

@@ -1,21 +1,38 @@
 import React, { Component } from 'react';
-import { browserHistory } from 'react-router';
+import CurrentUserStore from '../../stores/CurrentUserStore';
+import {browserHistory} from 'react-router';
+import { Container } from 'flux/utils';
 
 class StockMain extends Component {
-  componentWillMount() {
-    let user = this.props.auth.currentUser;
+  static getStores() {
+    return [CurrentUserStore]
+  }
 
-    if (!user) {
+  static calculateState () {
+    return {
+      currentUser: CurrentUserStore.getState()
+    }
+  }
+
+  constructor(props) {
+    super(props);
+    this.signOut = this.signOut.bind(this);
+  }
+
+  componentWillMount() {
+    if (this.state.currentUser.size === 0 || this.state.currentUser.get('currentUser') === null) {
       browserHistory.push('/welcome');
     }
   }
 
-  componentWillUpdate() {
-
+  componentWillUpdate(nextProps, nextState) {
+    if (nextState.currentUser.size === 0 || nextState.currentUser.get('currentUser') === null) {
+      browserHistory.push('/welcome');
+    }
   }
 
   signOut() {
-    this.props.auth.signOut();
+    this.state.firebase.get("auth").signOut();
   };
 
   componentDidMount() {
@@ -32,4 +49,4 @@ class StockMain extends Component {
   }
 }
 
-export default StockMain;
+export default Container.create(StockMain);

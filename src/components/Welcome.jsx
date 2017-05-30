@@ -1,19 +1,35 @@
 import React, { Component } from 'react';
-import firebase from 'firebase';
+import { Container } from 'flux/utils';
+import CurrentUserStore from '../stores/CurrentUserStore';
+import FirebaseStore from '../stores/FirebaseStore';
+import CurrentUserActions from '../actions/CurrentUserActions';
 import "../../node_modules/firebaseui/dist/firebaseui.css";
 import logo from "../../public/logo2name.png";
 import {browserHistory} from 'react-router';
 
 
 class Welcome extends Component {
+  static getStores() {
+    return [FirebaseStore, CurrentUserStore];
+  }
+
+  static calculateState() {
+    return {
+      firebase: FirebaseStore.getState(),
+      currentUser: CurrentUserStore.getState()
+    }
+  }
 
   componentWillMount() {
+    if (this.state.currentUser.size > 0 && this.state.currentUser.get("currentUser") !== null) {
+      browserHistory.push('/stock/GOOG');
+    } else {
+    }
+
   }
 
   componentDidMount() {
-    if (this.props.auth.currentUser) {
-      browserHistory.push('/stock/GOOG');
-    } else {
+    if (this.state.currentUser.size === 0 || this.state.currentUser.get('currentUser') === null) {
       var uiConfig = {
         callbacks: {
           signInSuccess: function (user) {
@@ -23,28 +39,35 @@ class Welcome extends Component {
         signInFlow: 'popup',
         signInOptions: [
           // Leave the lines as is for the providers you want to offer your users.
-          firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-          firebase.auth.EmailAuthProvider.PROVIDER_ID
+          this.state.firebase.get("auth").GoogleAuthProvider.PROVIDER_ID,
+          this.state.firebase.get("auth").EmailAuthProvider.PROVIDER_ID
         ],
         // Terms of service url.
         tosUrl: 'http://www.google.com'
       };
-      // console.log("/welcome");
-      this.props.firebaseui.start('#firebaseui-auth-container', uiConfig);
+
+      this.state.firebase.get("ui").start('#firebaseui-auth-container', uiConfig);
+
+      this.state.firebase.get("auth")().onAuthStateChanged(function(user) {
+        CurrentUserActions.setCurrentUser(user);
+      }, function(error) {
+        console.log(error);
+      });
     }
   }
 
-  componentWillUpdate() {
-
+  componentWillUpdate(nextProps, nextState) {
+    if (nextState.currentUser.size > 0 && nextState.currentUser.get("currentUser") !== null) {
+      browserHistory.push('/stock/GOOG');
+    }
   }
 
   signOut() {
-    this.props.auth.signOut();
+    this.state.firebase.get("auth").signOut();
   };
 
   componentWillUnmount() {
-    debugger
-    this.props.firebaseui.reset();
+    this.state.firebase.get("ui").reset();
   }
 
   render() {
@@ -104,4 +127,4 @@ class Welcome extends Component {
   }
 }
 
-export default Welcome;
+export default Container.create(Welcome);
