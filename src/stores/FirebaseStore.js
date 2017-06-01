@@ -1,5 +1,5 @@
 import { ReduceStore } from 'flux/utils';
-import Dispatcher from '../dispatcher.jsx';
+import Dispatcher from '../dispatcher';
 import { Map } from 'immutable';
 
 class CurrentUserStore extends ReduceStore {
