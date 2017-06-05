@@ -1,4 +1,5 @@
 import { ReduceStore } from 'flux/utils';
+import FirebaseStore from './FirebaseStore';
 import Dispatcher from '../dispatcher';
 import { Map } from 'immutable';
 
@@ -14,6 +15,7 @@ class CurrentUserStore extends ReduceStore {
   reduce(state, action) {
     switch (action.type) {
       case "SET_CURRENTUSER":
+        Dispatcher.waitFor([FirebaseStore.getDispatchToken()]);
         return Map({currentUser: action.currentUser});
 
       default:
