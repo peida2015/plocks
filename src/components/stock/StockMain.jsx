@@ -6,6 +6,7 @@ import { Container } from 'flux/utils';
 import ApiUtils from '../../ApiUtils/ApiUtils';
 import Linegraph from './Linegraph';
 
+import '../../chart.css';
 
 class StockMain extends Component {
   static getStores() {
