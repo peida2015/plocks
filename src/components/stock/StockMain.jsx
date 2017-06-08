@@ -22,7 +22,12 @@ class StockMain extends Component {
 
   constructor(props) {
     super(props);
+
+    this.buildCharts.bind(this);
     this.buildAddPanel.bind(this);
+
+    // Default height and width
+    this.state = { width: 500, height: 400 }
   }
 
   componentWillMount() {
@@ -41,9 +46,25 @@ class StockMain extends Component {
   }
 
   componentDidMount() {
+    var chartBox = document.getElementById('chartBox');
+    let width = chartBox.clientWidth;
+    if (this.state.width !== width) {
+      this.setState({ width: width });
+    };
+
+    this.resizeListener = function (evt) {
+      let width = document.getElementById('chartBox').clientWidth;
+      if (this.state.width !== width) {
+        this.setState({ width: width });
+      }
+    }.bind(this);
+
+    window.addEventListener('resize', this.resizeListener);
   }
 
-
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.resizeListener);
+  }
 
   handleAdd(evt, inputBox) {
     evt.preventDefault();
@@ -60,10 +81,11 @@ class StockMain extends Component {
 
       let linechart = (
         <div key={ symbol }
-          className="one-half column ridge-border">
+          className="one-half column ridge-border"
+          id="chartBox">
           <Linegraph stockData={ individualStockData.toArray() }
-            width={ 550 }
-            height={ 400 }/>
+            width={ this.state.width }
+            height={ this.state.height } />
         </div>);
         stockCharts.push(linechart);
     }
@@ -82,7 +104,8 @@ class StockMain extends Component {
 
     let addPanel = (
       <div className="one-half column"
-        key="addPanel">
+        key="addPanel"
+        id="chartBox">
         <form onSubmit={ this.handleAdd } >
           { inputBox }
           { submitButton }

@@ -10,6 +10,7 @@ class Linegraph extends Component {
     this.getXScale = this.getXScale.bind(this);
     this.getYScale = this.getYScale.bind(this);
     this.buildLinegraph = this.buildLinegraph.bind(this);
+
   }
 
   tradingDayConversion() {
@@ -44,8 +45,6 @@ class Linegraph extends Component {
     this.xScale = d3.scaleTime()
       .domain(domain)
       .range(range);
-
-    debugger
   }
 
   getYScale() {
