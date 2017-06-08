@@ -82,7 +82,7 @@ class Welcome extends Component {
                 {/* <!-- Logo container -->  */ }
                 <div className="container col-xs-12 col-lg-6">
                   <div className="col-lg-8 col-lg-offset-2">
-                    <img src={logo} className="img-responsive logo centered"
+                    <img src={logo} className="img-responsive logo centered-block"
                       alt='Plocks'/>
                   </div>
                 </div>
@@ -95,13 +95,13 @@ class Welcome extends Component {
                   <h1 className="text-primary text-center top-margin title-font">We Plot Your Stocks</h1>
 
                   <div className="top-margin">
-                    <div className="centered" id="g-signin2"></div>
+                    <div className="centered-block" id="g-signin2"></div>
                     <div id="firebaseui-auth-container"></div>
                   </div>
                   <div className="top-margin">
-                    <div className="centered">
+                    <div className="centered-block">
                         <div className="demo trial-text container" onClick={this.props.signOut}>
-                        <div className="centered">
+                        <div className="centered-block">
                           Try It for 5 Minutes
                         </div>
                       </div>
