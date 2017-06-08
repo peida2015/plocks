@@ -2,6 +2,7 @@ import { IndexRedirect, Router, Route, browserHistory, Redirect } from 'react-ro
 import React, { Component } from 'react';
 import Plocks from './components/Plocks.jsx';
 import Welcome from './components/Welcome.jsx';
+import Stock from './components/stock/Stock.jsx';
 import StockMain from './components/stock/StockMain.jsx';
 import './normalize.css';
 import './skeleton.css';
@@ -12,10 +13,11 @@ class App extends Component {
     return (
       <Router history={browserHistory}>
         <Route path="/" component={Plocks}>
-          <IndexRedirect to='/welcome'/>
-          <Route path="/welcome" component={Welcome}/>
-          <Route path="stock/:stock" component={StockMain}/>
-          <Redirect from="*" to="/welcome" />
+          <IndexRedirect to='welcome'/>
+          <Route path="welcome" component={Welcome}/>
+          <Route path="stocks" component={StockMain} />
+          <Route path="stock/:stock(/:chartType)" component={Stock}/>
+          <Redirect from="*" to="welcome" />
         </Route>
       </Router>
     );

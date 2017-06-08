@@ -22,7 +22,7 @@ class Welcome extends Component {
 
   componentWillMount() {
     if (this.state.currentUser.size > 0 && this.state.currentUser.get("currentUser") !== null) {
-      browserHistory.push('/stock/GOOG');
+      browserHistory.push('/stocks');
     } else {
     }
 
@@ -58,7 +58,7 @@ class Welcome extends Component {
 
   componentWillUpdate(nextProps, nextState) {
     if (nextState.currentUser.size > 0 && nextState.currentUser.get("currentUser") !== null) {
-      browserHistory.push('/stock/GOOG');
+      browserHistory.push('/stocks');
     }
   }
 
@@ -118,10 +118,6 @@ class Welcome extends Component {
           </div>
         </div>
         <h1>Welcome to Plocks</h1>
-        <div id="sign-in-status"></div>
-        <div id="sign-in"></div>
-        <div id="account-details"></div>
-        <button onClick={this.signOut.bind(this)}>Sign Out</button>
       </div>
     )
   }

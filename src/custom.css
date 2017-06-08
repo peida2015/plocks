@@ -6,6 +6,11 @@ nav {
   background-color: #B0C4DE;
 }
 
+.full-height {
+  /* +/- operators must be surrounded by white-space*/
+  height: calc(98vh - 66px);
+}
+
 .top-margin {
   margin-top: 3%;
 }
@@ -23,7 +28,7 @@ nav {
 }
 
 .ridge-border {
-  border: ridge 5px #D8FF4F;
+  border: ridge 5px #a8a8a8;
 }
 
 .ridge-border:hover {

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import CurrentUserStore from '../../stores/CurrentUserStore';
 import StockStore from '../../stores/StockStore';
-import {browserHistory} from 'react-router';
+import { browserHistory, Link } from 'react-router';
 import { Container } from 'flux/utils';
 import ApiUtils from '../../ApiUtils/ApiUtils';
 import Linegraph from './Linegraph';
@@ -31,7 +31,7 @@ class StockMain extends Component {
   }
 
   componentWillMount() {
-    // Check authentication
+    // Check authentication or preload data;
     if (this.state.currentUser.size === 0 || this.state.currentUser.get('currentUser') === null) {
       browserHistory.push('/welcome');
     } else if (this.state.rawData.size === 0) {
@@ -75,23 +75,29 @@ class StockMain extends Component {
   buildCharts(stockData) {
     var stockCharts = [];
     for (var symbol in stockData) {
-      let individualStockData = stockData[symbol].get('filtered') ?
-      stockData[symbol].get('filtered') :
-      stockData[symbol].get('original');
+      if (typeof symbol === "string") {
 
-      let linechart = (
-        <div key={ symbol }
-          className="one-half column ridge-border"
-          id="chartBox">
-          <Linegraph stockData={ individualStockData.toArray() }
-            width={ this.state.width }
-            height={ this.state.height } />
-        </div>);
+        let individualStockData = stockData[symbol].get('filtered') ?
+        stockData[symbol].get('filtered') :
+        stockData[symbol].get('original');
+
+        let linechart = (
+          <div key={ symbol }
+            className="one-half column ridge-border"
+            id="chartBox">
+            <Link to={ `/stock/${symbol}` }>
+              <Linegraph stockData={ individualStockData.toArray() }
+                width={ this.state.width }
+                height={ this.state.height } />
+            </Link>
+          </div>);
+
         stockCharts.push(linechart);
+      }
     }
 
     return stockCharts;
-  }
+}
 
   buildAddPanel() {
     let inputBox = (<input className="u-full-width"
