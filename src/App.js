@@ -3,8 +3,8 @@ import React, { Component } from 'react';
 import Plocks from './components/Plocks.jsx';
 import Welcome from './components/Welcome.jsx';
 import StockMain from './components/stock/StockMain.jsx';
-import './App.css';
-
+import './normalize.css';
+import './skeleton.css';
 
 class App extends Component {
 

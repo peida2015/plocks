@@ -50,6 +50,7 @@ class Plocks extends Component {
   render() {
     return (
       <div>
+        <div className="header-margin"></div>
         <Navbar user={ this.state.currentUser }/>
         { this.props.children }
       </div>

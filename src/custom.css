@@ -17,23 +17,36 @@ nav {
   font-family: courier;
 }
 
+.overwrite-full-width {
+  max-width: none;
+  width: 98%;
+}
+
+.ridge-border {
+  border: ridge 5px #D8FF4F;
+}
+
+.ridge-border:hover {
+  border-color: #2BDB49;
+  cursor: pointer;
+}
 
 .title-font {
   font-family: 'Syncopate', serif;
 }
 
-.centered {
-  // "-moz-min-content" for Mozilla FireFox and "fit-content" for Google Chrome.center the Gooogle Sign-in button.
+.centered-block {
+  /*"-moz-min-content" for Mozilla FireFox and "fit-content" for Google Chrome.center the Gooogle Sign-in button.*/
   margin-left: auto;
   margin-right: auto;
   width: -moz-fit-content;
   width: fit-content;
-  display: inline;
+  display: block;
 }
 
 div.header-margin {
   width: 100%;
-  height: 52px;
+  height: 56px;
 }
 
 div.content-top-margin {
