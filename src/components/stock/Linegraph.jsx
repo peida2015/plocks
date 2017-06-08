@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Container } from 'flux/utils';
 import Axes from './Axes';
 import * as d3 from 'd3';
 
@@ -14,11 +13,14 @@ class Linegraph extends Component {
   }
 
   tradingDayConversion() {
-    var parser = d3.timeParse("%Y-%m-%d");
+    // Do conversion only for the first time
+    if (typeof this.props.stockData[0].tradingDay === "string") {
+      var parser = d3.timeParse("%Y-%m-%d");
 
-    this.props.stockData.forEach(function (d) {
-      return d.tradingDay = parser(d.tradingDay);
-    });
+      this.props.stockData.forEach(function (d) {
+        return d.tradingDay = parser(d.tradingDay);
+      });
+    }
   }
 
   getXScale() {
@@ -42,6 +44,8 @@ class Linegraph extends Component {
     this.xScale = d3.scaleTime()
       .domain(domain)
       .range(range);
+
+    debugger
   }
 
   getYScale() {
@@ -83,7 +87,7 @@ class Linegraph extends Component {
     let linegraph = this.buildLinegraph();
 
     return (
-      <div>
+      <div className="centered-block">
         <svg width={ this.props.width }
               height={ this.props.height }>
           <text className="symbol"

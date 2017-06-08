@@ -11,7 +11,7 @@ class Axes extends Component {
 
   buildXAxis() {
     let xScale = this.props.xScale;
-    var dateFormat = d3.timeFormat("%b'%y");
+    var dateFormat = d3.timeFormat("%b '%y");
 
     // Draw x-axis line
     let path = d3.path();
@@ -26,7 +26,7 @@ class Axes extends Component {
     let xTicks = xScale.ticks().map((tick)=>{
     return (
       <g className='tick'
-          key={tick.toLocaleDateString()}
+          key={ tick.toLocaleDateString()}
           transform={`translate(${xScale(tick)},0)`}>
           <line x2='0' y2='5'></line>
           <line className="grid"
@@ -54,11 +54,12 @@ class Axes extends Component {
     let yTicks = yScale.ticks().map((tick)=>{
     return (
       <g className='tick'
+          key={ tick.toString() }
           transform={`translate(0, ${yScale(tick)-this.props.y+this.props.yMargin})`}>
           <line x2='-5' y2='5'></line>
           <line className="grid"
                 x2={ this.props.width }></line>
-          <text className="date"
+          <text
             transform="rotate(0)"
             x="-30"
             y="0"
