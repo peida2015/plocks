@@ -22,6 +22,7 @@ class StockMain extends Component {
 
   constructor(props) {
     super(props);
+    this.buildAddPanel.bind(this);
   }
 
   componentWillMount() {
@@ -39,64 +40,81 @@ class StockMain extends Component {
     }
   }
 
+  componentDidMount() {
+  }
+
+
+
   handleAdd(evt, inputBox) {
     evt.preventDefault();
     let entered = evt.target.firstChild.value;
     if (entered.length > 0) ApiUtils.fetchStockPrices(evt.target.firstChild.value.toUpperCase());
   };
 
-  componentDidMount() {
+  buildCharts(stockData) {
+    var stockCharts = [];
+    for (var symbol in stockData) {
+      let individualStockData = stockData[symbol].get('filtered') ?
+      stockData[symbol].get('filtered') :
+      stockData[symbol].get('original');
+
+      let linechart = (
+        <div key={ symbol }
+          className="one-half column ridge-border">
+          <Linegraph stockData={ individualStockData.toArray() }
+            width={ 550 }
+            height={ 400 }/>
+        </div>);
+        stockCharts.push(linechart);
+    }
+
+    return stockCharts;
+  }
+
+  buildAddPanel() {
+    let inputBox = (<input className="u-full-width"
+                            placeholder="Type Stock Symbol"
+                            type="text" />);
+
+    let submitButton = (<input className="button-primary"
+                                type="submit"
+                                value="Add" />);
+
+    let addPanel = (
+      <div className="one-half column"
+        key="addPanel">
+        <form onSubmit={ this.handleAdd } >
+          { inputBox }
+          { submitButton }
+        </form>
+      </div>)
+
+      return addPanel;
+  }
+
+  wrapInRows(stockCharts) {
+    return stockCharts.reduce((r, chart, idx)=> {
+      if (idx % 2 === 0) r.push([]);
+      r[r.length-1].push(chart);
+      return r;
+    }, []).map((pair, idx)=>{
+      return (
+        <div className="row" key={ idx }>
+          { pair }
+        </div>);
+    });
   }
 
   render() {
     let stockData = this.state.rawData.toObject();
 
+    let stockCharts = this.buildCharts(stockData);
+    let addPanel = this.buildAddPanel();
 
-    var stockCharts = [];
-    for (var symbol in stockData) {
-      let individualStockData = stockData[symbol].get('filtered') ?
-                                stockData[symbol].get('filtered') :
-                                stockData[symbol].get('original');
-
-      let linechart = (
-        <div key={ symbol }
-              className="one-half column ridge-border">
-          <Linegraph stockData={ individualStockData.toArray() }
-                    width={ 550 }
-                    height={ 400 }/>
-        </div>);
-      stockCharts.push(linechart);
-    }
-
-    let inputBox = (<input className="u-full-width"
-            placeholder="Type Stock Symbol"
-            type="text" />);
-
-    let addingPanel = (
-        <div className="one-half column"
-              key="addPanel">
-          <form onSubmit={ this.handleAdd } >
-          { inputBox }
-          <input className="button-primary"
-                  type="submit"
-                  value="Add"
-                  />
-          </form>
-        </div>)
-
-    stockCharts.push(addingPanel);
+    stockCharts.push(addPanel);
 
     if (stockCharts.length > 1) {
-      stockCharts = stockCharts.reduce((r, chart, idx)=> {
-        if (idx % 2 === 0) r.push([]);
-        r[r.length-1].push(chart);
-        return r;
-      }, []).map((pair, idx)=>{
-        return (
-          <div className="row" key={ idx }>
-            { pair }
-          </div>);
-      })
+      stockCharts = this.wrapInRows(stockCharts);
     }
 
     return (
