@@ -46,20 +46,17 @@ class StockMain extends Component {
   }
 
   componentDidMount() {
-    var chartBox = document.getElementById('chartBox');
-    let width = chartBox.clientWidth;
-    if (this.state.width !== width) {
-      this.setState({ width: width });
-    };
-
     this.resizeListener = function (evt) {
       let width = document.getElementById('chartBox').clientWidth;
       if (this.state.width !== width) {
         this.setState({ width: width });
       }
+
+      document.getElementById('footer-margin').style.height = document.getElementById('footer').clientHeight+"px";
     }.bind(this);
 
     window.addEventListener('resize', this.resizeListener);
+    this.resizeListener();
   }
 
   componentWillUnmount() {
@@ -89,7 +86,7 @@ class StockMain extends Component {
               <SVG stockData={ individualStockData.toArray() }
                 width={ this.state.width }
                 height={ this.state.height }
-                chartType="linegraph" />
+                chartType="candlestick" />
             </Link>
           </div>);
 
@@ -101,22 +98,31 @@ class StockMain extends Component {
 }
 
   buildAddPanel() {
-    let inputBox = (<input className="u-full-width"
+    let inputBox = (<input className={
+      window.innerWidth < 550 ? "two-thirds-vw columns" : "eight columns"
+    }
                             placeholder="Type Stock Symbol"
                             type="text" />);
 
-    let submitButton = (<input className="button-primary"
+    let submitButton = (<input className={
+      window.innerWidth < 550 ? "one-thirds-vw  columns button-primary" : "four columns button-primary"
+    }
                                 type="submit"
                                 value="Add" />);
 
     let addPanel = (
-      <div className="one-half column"
-        key="addPanel"
-        id="chartBox">
-        <form onSubmit={ this.handleAdd } >
-          { inputBox }
-          { submitButton }
-        </form>
+      <div className="row">
+        <div className={
+            window.innerWidth < 550 ? "twelve columns" :
+            "offset-by-three six columns"
+          }
+          key="addPanel"
+          id="chartBox">
+          <form onSubmit={ this.handleAdd } >
+                { inputBox }
+                { submitButton }
+          </form>
+        </div>
       </div>)
 
       return addPanel;
@@ -141,7 +147,7 @@ class StockMain extends Component {
     let stockCharts = this.buildCharts(stockData);
     let addPanel = this.buildAddPanel();
 
-    stockCharts.push(addPanel);
+    // stockCharts.push(addPanel);
 
     if (stockCharts.length > 1) {
       stockCharts = this.wrapInRows(stockCharts);
@@ -151,6 +157,10 @@ class StockMain extends Component {
       <div>
         <div className="overwrite-full-width container">
           { stockCharts }
+        </div>
+        <div id="footer-margin"></div>
+        <div className="overwrite-full-width container" id="footer">
+          { addPanel }
         </div>
       </div>
     )

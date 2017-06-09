@@ -24,16 +24,33 @@ nav {
 
 .overwrite-full-width {
   max-width: none;
-  width: 98%;
+  width: 97vw;
 }
 
 .ridge-border {
-  border: ridge 5px #a8a8a8;
+  border: ridge 5px #FFFFFF;
 }
 
 .ridge-border:hover {
-  border-color: #2BDB49;
+  border-color: #888888;
   cursor: pointer;
+}
+
+#footer {
+  position: fixed;
+  bottom: 0px;
+  background-color: white;
+  width: 100%;
+}
+
+.two-thirds-vw {
+  margin-left: 2vw;
+  width: calc(92vw * 2 / 3);
+}
+
+.one-thirds-vw {
+  margin-left: 2vw;
+  width: calc(92vw / 3);
 }
 
 .title-font {
