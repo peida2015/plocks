@@ -30,9 +30,10 @@ class Stock extends Component {
   }
 
   componentWillMount() {
-    let symbol = this.props.params.stock;
+    let symbol = this.props.params.stock.toUpperCase();
     // Check authentication or preload data;
     if (this.state.currentUser.size === 0 || this.state.currentUser.get('currentUser') === null) {
+      window.localStorage.setItem("__REDIRECTED_FROM_STOCK", symbol);
       browserHistory.push('/welcome');
     } else if (this.state.rawData.size === 0 || this.state.rawData.get(symbol).size === 0) {
       ApiUtils.fetchStockPrices(symbol);
@@ -40,20 +41,32 @@ class Stock extends Component {
   }
 
   componentWillUpdate(nextProps, nextState) {
+    let symbol = this.props.params.stock.toUpperCase();
+
     if (nextState.currentUser.size === 0 || nextState.currentUser.get('currentUser') === null) {
+      window.localStorage.setItem("__REDIRECTED_FROM_STOCK", symbol);
       browserHistory.push('/welcome');
+    } else {
+      window.localStorage.removeItem("__REDIRECTED_FROM_STOCK");
     }
   }
 
   componentDidMount() {
     this.resizeListener = function (evt) {
-      let width = document.getElementById('chartBox').clientWidth;
-      let height = document.getElementById('chartBox').clientHeight;
-      if (this.state.width !== width) {
+      if (document.getElementById('chartBox')) {
+        let width = document.getElementById('chartBox').clientWidth;
+        let height = document.getElementById('chartBox').clientHeight;
+        if (this.state.width !== width) {
+          this.setState({
+            width: width,
+            height: height
+          });
+        }
+      } else {
         this.setState({
-                        width: width,
-                        height: height
-                      });
+          width: window.innerWidth*0.96,
+          height: window.innerHeight*0.9
+        })
       }
     }.bind(this);
 
@@ -66,7 +79,7 @@ class Stock extends Component {
   }
 
   buildChart() {
-    var symbol = this.props.params.stock;
+    var symbol = this.props.params.stock.toUpperCase();
     if (this.state.rawData.get(symbol)) {
       let stockData = this.state.rawData.get(symbol).get('filtered') ?
       this.state.rawData.get(symbol).get('filtered') :

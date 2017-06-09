@@ -23,9 +23,7 @@ class Welcome extends Component {
   componentWillMount() {
     if (this.state.currentUser.size > 0 && this.state.currentUser.get("currentUser") !== null) {
       browserHistory.push('/stocks');
-    } else {
     }
-
   }
 
   componentDidMount() {
@@ -58,7 +56,14 @@ class Welcome extends Component {
 
   componentWillUpdate(nextProps, nextState) {
     if (nextState.currentUser.size > 0 && nextState.currentUser.get("currentUser") !== null) {
-      browserHistory.push('/stocks');
+
+      var redirectSymbol = window.localStorage.getItem("__REDIRECTED_FROM_STOCK");
+
+      if (redirectSymbol) {
+        browserHistory.push(`/stock/${redirectSymbol}`);
+      } else {
+        browserHistory.push('/stocks');
+      }
     }
   }
 
