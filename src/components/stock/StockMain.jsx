@@ -5,8 +5,8 @@ import { browserHistory, Link } from 'react-router';
 import { Container } from 'flux/utils';
 import ApiUtils from '../../ApiUtils/ApiUtils';
 import SVG from './SVGContainer';
-
-import './chart.css';
+import { FormControl, FormGroup, Button, InputGroup,
+          Glyphicon, Grid, Row, Col } from 'react-bootstrap';
 
 class StockMain extends Component {
   static getStores() {
@@ -65,8 +65,8 @@ class StockMain extends Component {
 
   handleAdd(evt, inputBox) {
     evt.preventDefault();
-    let entered = evt.target.firstChild.value;
-    if (entered.length > 0) ApiUtils.fetchStockPrices(evt.target.firstChild.value.toUpperCase());
+    let entered = evt.target.firstChild.firstChild.firstChild.value;
+    if (entered.length > 0) ApiUtils.fetchStockPrices(entered.toUpperCase());
   };
 
   buildCharts(stockData) {
@@ -98,32 +98,27 @@ class StockMain extends Component {
 }
 
   buildAddPanel() {
-    let inputBox = (<input className={
-      window.innerWidth < 550 ? "two-thirds-vw columns" : "eight columns"
-    }
-                            placeholder="Type Stock Symbol"
-                            type="text" />);
-
-    let submitButton = (<input className={
-      window.innerWidth < 550 ? "one-thirds-vw  columns button-primary" : "four columns button-primary"
-    }
-                                type="submit"
-                                value="Add" />);
 
     let addPanel = (
-      <div className="row">
-        <div className={
-            window.innerWidth < 550 ? "twelve columns" :
-            "offset-by-three six columns"
-          }
+      <Row>
+        <Col sm={ 12 } lg={ 6 } lgOffset={ 3 }
           key="addPanel"
           id="chartBox">
           <form onSubmit={ this.handleAdd } >
-                { inputBox }
-                { submitButton }
+              <FormGroup>
+                <InputGroup>
+                  <FormControl placeholder="Type Stock Symbol"
+                                type="text" />
+                  <InputGroup.Button>
+                    <Button bsStyle="primary" type="submit">
+                      <Glyphicon glyph="plus" />
+                    </Button>
+                  </InputGroup.Button>
+                </InputGroup>
+              </FormGroup>
           </form>
-        </div>
-      </div>)
+        </Col>
+      </Row>)
 
       return addPanel;
   }
@@ -160,7 +155,9 @@ class StockMain extends Component {
         </div>
         <div id="footer-margin"></div>
         <div className="overwrite-full-width container" id="footer">
+        <Grid>
           { addPanel }
+        </Grid>
         </div>
       </div>
     )

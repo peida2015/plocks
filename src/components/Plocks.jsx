@@ -4,9 +4,9 @@ import Navbar from './Navbar.jsx';
 import FirebaseStore from '../stores/FirebaseStore';
 import CurrentUserStore from '../stores/CurrentUserStore';
 import FirebaseActions from '../actions/FirebaseActions';
-// import Welcome from './Welcome.jsx';
-// import StockMain from './stock/StockMain.jsx';
 import firebaseui from 'firebaseui';
+
+import './stock/chart.css';
 
 // Initialize firebase;
 import * as firebase from 'firebase';

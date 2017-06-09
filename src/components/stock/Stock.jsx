@@ -6,8 +6,6 @@ import { Container } from 'flux/utils';
 import ApiUtils from '../../ApiUtils/ApiUtils';
 import SVG from './SVGContainer';
 
-import './chart.css';
-
 class Stock extends Component {
   static getStores() {
     return [CurrentUserStore, StockStore]
@@ -92,7 +90,7 @@ class Stock extends Component {
           <SVG stockData={ stockData.toArray() }
             width={ this.state.width }
             height={ this.state.height }
-            chartType="linegraph"/>
+            chartType="candlestick"/>
         </div>);
         return chart;
     } else {

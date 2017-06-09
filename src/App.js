@@ -4,8 +4,6 @@ import Plocks from './components/Plocks.jsx';
 import Welcome from './components/Welcome.jsx';
 import Stock from './components/stock/Stock.jsx';
 import StockMain from './components/stock/StockMain.jsx';
-import './normalize.css';
-import './skeleton.css';
 
 class App extends Component {
 
