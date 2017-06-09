@@ -122,7 +122,6 @@ class Welcome extends Component {
 
           </div>
         </div>
-        <h1>Welcome to Plocks</h1>
       </div>
     )
   }

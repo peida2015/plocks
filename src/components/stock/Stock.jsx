@@ -4,7 +4,7 @@ import StockStore from '../../stores/StockStore';
 import { browserHistory, Link } from 'react-router';
 import { Container } from 'flux/utils';
 import ApiUtils from '../../ApiUtils/ApiUtils';
-import Linegraph from './Linegraph';
+import SVG from './SVGContainer';
 
 import './chart.css';
 
@@ -89,9 +89,10 @@ class Stock extends Component {
         <div key={ symbol }
           className="twelve column ridge-border full-height"
           id="chartBox">
-          <Linegraph stockData={ stockData.toArray() }
+          <SVG stockData={ stockData.toArray() }
             width={ this.state.width }
-            height={ this.state.height } />
+            height={ this.state.height }
+            chartType="linegraph"/>
         </div>);
         return chart;
     } else {
