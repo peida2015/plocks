@@ -79,8 +79,9 @@ class StockMain extends Component {
         stockData[symbol].get('original');
 
         let linechart = (
-          <div key={ symbol }
-            className="one-half column ridge-border"
+          <Col lg={6}
+            key={ symbol }
+            className="ridge-border"
             id="chartBox">
             <Link to={ `/stock/${symbol}` }>
               <SVG stockData={ individualStockData.toArray() }
@@ -88,7 +89,7 @@ class StockMain extends Component {
                 height={ this.state.height }
                 chartType="candlestick" />
             </Link>
-          </div>);
+          </Col>);
 
         stockCharts.push(linechart);
       }
@@ -98,7 +99,6 @@ class StockMain extends Component {
 }
 
   buildAddPanel() {
-
       let addPanel = (
           <Row>
             <Col lg={ 6 } lgOffset={ 3 } className="footer-vertical-align">
@@ -128,9 +128,9 @@ class StockMain extends Component {
       return r;
     }, []).map((pair, idx)=>{
       return (
-        <div className="row" key={ idx }>
+        <Row key={ idx }>
           { pair }
-        </div>);
+        </Row>);
     });
   }
 
@@ -148,9 +148,9 @@ class StockMain extends Component {
 
     return (
       <div>
-        <div className="overwrite-full-width container">
+        <Grid className="overwrite-full-width">
           { stockCharts }
-        </div>
+        </Grid>
         <div id="footer-margin"></div>
         <Navbar fixedBottom={ true } id="footer" expanded={ true }>
             { addPanel }
