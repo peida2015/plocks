@@ -36,23 +36,6 @@ nav {
   cursor: pointer;
 }
 
-#footer {
-  position: fixed;
-  bottom: 0px;
-  background-color: white;
-  width: 100%;
-}
-
-.two-thirds-vw {
-  margin-left: 2vw;
-  width: calc(92vw * 2 / 3);
-}
-
-.one-thirds-vw {
-  margin-left: 2vw;
-  width: calc(92vw / 3);
-}
-
 .title-font {
   font-family: 'Syncopate', serif;
 }
@@ -64,6 +47,11 @@ nav {
   width: -moz-fit-content;
   width: fit-content;
   display: block;
+}
+
+.footer-vertical-align {
+  margin-top: 8px;
+  margin-bottom: -8px;
 }
 
 div.header-margin {
@@ -104,7 +92,7 @@ img.icon {
 }
 
 .margin-on-top {
-  // Vertically center text within button.
+  /*Vertically center text within button.*/
   position: relative;
   top: 70px;
 }

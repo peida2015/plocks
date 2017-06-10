@@ -6,7 +6,7 @@ import { Container } from 'flux/utils';
 import ApiUtils from '../../ApiUtils/ApiUtils';
 import SVG from './SVGContainer';
 import { FormControl, FormGroup, Button, InputGroup,
-          Glyphicon, Grid, Row, Col } from 'react-bootstrap';
+          Glyphicon, Grid, Row, Col, Navbar } from 'react-bootstrap';
 
 class StockMain extends Component {
   static getStores() {
@@ -99,26 +99,24 @@ class StockMain extends Component {
 
   buildAddPanel() {
 
-    let addPanel = (
-      <Row>
-        <Col sm={ 12 } lg={ 6 } lgOffset={ 3 }
-          key="addPanel"
-          id="chartBox">
-          <form onSubmit={ this.handleAdd } >
-              <FormGroup>
-                <InputGroup>
-                  <FormControl placeholder="Type Stock Symbol"
-                                type="text" />
-                  <InputGroup.Button>
-                    <Button bsStyle="primary" type="submit">
-                      <Glyphicon glyph="plus" />
-                    </Button>
-                  </InputGroup.Button>
-                </InputGroup>
-              </FormGroup>
-          </form>
-        </Col>
-      </Row>)
+      let addPanel = (
+          <Row>
+            <Col lg={ 6 } lgOffset={ 3 } className="footer-vertical-align">
+              <form onSubmit={ this.handleAdd }>
+                <FormGroup>
+                  <InputGroup>
+                    <FormControl placeholder="Type Stock Symbol" type="text"/>
+                    <InputGroup.Button>
+                      <Button bsStyle="primary" type="submit">
+                        <Glyphicon glyph="plus" />
+                      </Button>
+                    </InputGroup.Button>
+                  </InputGroup>
+                </FormGroup>
+              </form>
+            </Col>
+          </Row>
+      )
 
       return addPanel;
   }
@@ -154,11 +152,9 @@ class StockMain extends Component {
           { stockCharts }
         </div>
         <div id="footer-margin"></div>
-        <div className="overwrite-full-width container" id="footer">
-        <Grid>
-          { addPanel }
-        </Grid>
-        </div>
+        <Navbar fixedBottom={ true } id="footer" expanded={ true }>
+            { addPanel }
+        </Navbar>
       </div>
     )
   }
