@@ -2,8 +2,8 @@ body {
   overflow-x: hidden;
 }
 
-nav {
-  background-color: #B0C4DE;
+nav.navBG {
+  background: #D3E6FF;
 }
 
 .full-height {

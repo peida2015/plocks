@@ -3,7 +3,8 @@ import logo from '../../public/logo2.png';
 import { Container } from 'flux/utils';
 import CurrentUserStore from '../stores/CurrentUserStore';
 import FirebaseStore from '../stores/FirebaseStore';
-
+import { Navbar as RBNavbar }  from 'react-bootstrap';
+import { Nav, NavItem, Button } from 'react-bootstrap';
 
 class Navbar extends Component {
   static getStores() {
@@ -35,46 +36,41 @@ class Navbar extends Component {
   render() {
     let user = this.state.currentUser.get('currentUser');
     let showName = user ? (
-      <li>{"Hi, "+ user.displayName}</li>) : "";
+      <RBNavbar.Text pullRight>
+        {"Hi, "+ user.displayName}
+      </RBNavbar.Text>) : "";
 
     let logoutButton = user ?
-    (<li id='g-signin3'>
-        <a className='page-scroll'
-            onClick={ this.signOut }>Logout</a>
-      </li>) : "";
+        (<RBNavbar.Form pullRight>
+          <Button id='g-signin3' bsStyle="warning" onClick={ this.signOut }>
+            Logout
+          </Button>
+        </RBNavbar.Form>) : "";
 
     return (
       <div>
           {/*<!-- navbar begins -->*/}
-        <nav className="navbar navbar-custom navbar-fixed-top" role="navigation">
-          <div className="container">
-            <div className="navbar-header">
-              <a className="navbar-brand" href="/welcome">
-                <img src={logo} className="icon" alt="Plocks logo"/>
-              </a>
-              <button type="button" className="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
-                  Menu <i className="fa fa-bars"></i>
-              </button>
-              <a className="navbar-brand page-scroll" href="./" data-no-turbolink>
+        <RBNavbar fixedTop={true} className="navBG">
+          { /*<!-- navbar-custom deleted from class -->*/ }
+            <RBNavbar.Header>
+              <RBNavbar.Brand>
+                <a href="/welcome">
+                  <img src={logo} className="icon" alt="Plocks logo"/>
+                </a>
+                <a className="page-scroll" href="./">
                   <i className="fa fa-play-circle"></i> <span className="light title-font">PLOCKS</span>
-              </a>
-            </div>
+                </a>
+              </RBNavbar.Brand>
+              <RBNavbar.Toggle />
+            </RBNavbar.Header>
 
           {/*<!-- Collect the nav links, forms, and other content for toggling -->*/}
-            <div className="collapse navbar-collapse navbar-right navbar-main-collapse">
-              <ul className="nav navbar-nav">
-                {/*<!-- Hidden li included to remove active className from about link when scrolled up past about section -->*/}
-                <li className="hidden active">
-                    <a href="#page-top"></a>
-                </li>
-                { showName }
-                { logoutButton }
-              </ul>
-            </div>
+            <RBNavbar.Collapse>
+              { showName }
+              { logoutButton }
+            </RBNavbar.Collapse>
           {/*<!-- /.navbar-collapse -->*/}
-          </div>
-        {/*<!-- /.container -->*/}
-        </nav>
+        </RBNavbar>
       </div>
     )
   }
