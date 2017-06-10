@@ -47,9 +47,11 @@ class StockMain extends Component {
 
   componentDidMount() {
     this.resizeListener = function (evt) {
-      let width = document.getElementById('chartBox').clientWidth;
-      if (this.state.width !== width) {
-        this.setState({ width: width });
+      if (document.getElementById('chartBox')) {
+        let width = document.getElementById('chartBox').clientWidth;
+        if (this.state.width !== width) {
+          this.setState({ width: width });
+        }
       }
 
       document.getElementById('footer-margin').style.height = document.getElementById('footer').clientHeight+"px";
@@ -57,6 +59,40 @@ class StockMain extends Component {
 
     window.addEventListener('resize', this.resizeListener);
     this.resizeListener();
+
+
+    // Start rolling text animation
+    var rollingHeader = document.getElementById('rolling');
+    var rollingText = document.getElementById('rolling-text');
+    var textWidth = rollingText.scrollWidth;
+    var offsetLeft = rollingText.offsetParent.offsetLeft;
+    var windowWidth = window.innerWidth;
+    var totalMoveLength = windowWidth + 2 * textWidth;
+    var timeToComplete = 30 * 1000;
+    var lastUpdated = null;
+
+    var start = null;
+
+    var step = (timestamp)=>{
+      if (!start)  start = timestamp, lastUpdated = timestamp;
+      var progress = timestamp - start;
+
+      if (timestamp-lastUpdated > 50) {
+        lastUpdated = timestamp;
+        if (progress > timeToComplete) {
+          // Reset
+          windowWidth = window.innerWidth;
+          totalMoveLength = windowWidth + 2 * textWidth;
+          start = timestamp;
+          rollingHeader.style.left = totalMoveLength - textWidth - offsetLeft + "px";
+        } else {
+          rollingHeader.style.left = totalMoveLength * (1 - (progress % timeToComplete)/timeToComplete) - offsetLeft - textWidth + "px";
+        }
+      }
+      window.requestAnimationFrame(step);
+    };
+
+    window.requestAnimationFrame(step);
   }
 
   componentWillUnmount() {
@@ -96,7 +132,7 @@ class StockMain extends Component {
     }
 
     return stockCharts;
-}
+  }
 
   buildAddPanel() {
       let addPanel = (
@@ -152,8 +188,11 @@ class StockMain extends Component {
           { stockCharts }
         </Grid>
         <div id="footer-margin"></div>
-        <Navbar fixedBottom={ true } id="footer" expanded={ true }>
+        <Navbar fixedBottom={ true } id="footer">
             { addPanel }
+            <Navbar.Header id="rolling">
+              <span id="rolling-text">Rolling stock info</span>
+            </Navbar.Header>
         </Navbar>
       </div>
     )
