@@ -61,9 +61,14 @@ class SVG extends Component {
       };
     }
 
+    // Determine yAxisLength;
+    this.yAxisLength = this.props.height > 500 ?
+                    this.props.height - 3 * this.yMargin :
+                    this.props.height - 2 * this.yMargin;
+
     this.yScale = d3.scaleLinear()
       .domain([min, max])
-      .range([this.props.height - 4*this.yMargin, 0]);
+      .range([this.yAxisLength, 0]);
   }
 
   buildGraph() {
@@ -105,10 +110,10 @@ class SVG extends Component {
           <Axes xScale={ this.xScale }
                 yScale={ this.yScale }
                 x={ this.xMargin }
-                y={ this.props.height - 3*this.yMargin }
+                y={ this.props.height - (this.props.height > 500 ? 2*this.yMargin : this.yMargin) }
                 xMargin={ this.xMargin }
                 yMargin={ this.yMargin }
-                height={ this.props.height - 4*this.yMargin }
+                height={ this.yAxisLength }
                 width={ this.props.width - 2*this.xMargin }/>
           { graph }
         </svg>

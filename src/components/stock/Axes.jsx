@@ -22,9 +22,12 @@ class Axes extends Component {
     path.lineTo(0, 0);
     path.lineTo(length, 0);
     path.lineTo(length, 3);
+    let wide = this.props.width > 500;
+    let tall = this.props.height > 450;
+
 
     // Generate ticks on x-axis.
-    let xTicks = xScale.ticks().map((tick)=>{
+    let xTicks = xScale.ticks(wide ? 10 : 3).map((tick)=>{
     return (
       <g className='tick'
           key={ tick.toLocaleDateString()}
@@ -37,8 +40,8 @@ class Axes extends Component {
             x="-10"
             y="0"
             style={{ fontSize: this.fontSize }}>
-              <tspan dy="1.4em">{ monthFormat(tick) }</tspan>
-              <tspan x="-0.5em" dy="1.4em">{ yearFormat(tick) }</tspan>
+              <tspan dy={ tall ? "1.4em" : "-1.4em"}>{ monthFormat(tick) }</tspan>
+              <tspan x="-0.5em" dy={ tall ? "1.4em" : "-1.4em"}>{ yearFormat(tick) }</tspan>
           </text>
       </g>)
     });
@@ -55,7 +58,10 @@ class Axes extends Component {
   buildYAxis() {
     let yScale = this.props.yScale;
     // Generate ticks on y-axis.
-    let yTicks = yScale.ticks().map((tick)=>{
+    let wide = this.props.width > 500;
+    let tall = this.props.height > 450;
+
+    let yTicks = yScale.ticks(tall ? 10 : 4).map((tick)=>{
     return (
       <g className='tick'
           key={ tick.toString() }
