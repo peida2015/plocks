@@ -64,54 +64,54 @@ class StockMain extends Component {
     this.resizeListener();
 
     // Start ticker belt
-    this.startTickerBeltAnimation.apply(this);
+    // this.startTickerBeltAnimation.apply(this);
   }
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.resizeListener);
   }
 
-  startTickerBeltAnimation() {
-    // Start rolling text animation
-    var rollingHeader = document.getElementById('rolling');
-    var rollingText = document.getElementById('rolling-text');
-    var prevTextLength = rollingText.textContent.length;
-    var textWidth, offsetLeft, windowWidth, totalMoveLength;
-    offsetLeft = rollingText.offsetParent.offsetLeft;
-    var timeToComplete = 30 * 1000;
-
-    var start = null;
-    var lastUpdated = null;
-
-    var step = (timestamp)=>{
-      if (!start)  {
-        start = timestamp;
-        lastUpdated = timestamp;
-      }
-      var progress = timestamp - start;
-
-      if (timestamp-lastUpdated > 50 && this.state.tickerBelt.length !== 0) {
-        lastUpdated = timestamp;
-        if (progress > timeToComplete ||
-            prevTextLength !== this.state.tickerBelt.length) {
-          // Reset after completion
-          rollingText.textContent = this.state.tickerBelt;
-          textWidth = rollingText.scrollWidth;
-          windowWidth = window.innerWidth;
-          totalMoveLength = windowWidth + textWidth;
-
-          start = timestamp;
-          rollingHeader.style.left = totalMoveLength - textWidth - offsetLeft + "px";
-          prevTextLength = this.state.tickerBelt.length;
-        } else {
-          rollingHeader.style.left = totalMoveLength * (1 - progress/timeToComplete) - offsetLeft - textWidth + "px";
-        }
-      }
-      window.requestAnimationFrame(step);
-    };
-
-    window.requestAnimationFrame(step);
-  }
+  // startTickerBeltAnimation() {
+  //   // Start rolling text animation
+  //   var rollingHeader = document.getElementById('rolling');
+  //   var rollingText = document.getElementById('rolling-text');
+  //   var prevTextLength = rollingText.textContent.length;
+  //   var textWidth, offsetLeft, windowWidth, totalMoveLength;
+  //   offsetLeft = rollingText.offsetParent.offsetLeft;
+  //   var timeToComplete = 30 * 1000;
+  //
+  //   var start = null;
+  //   var lastUpdated = null;
+  //
+  //   var step = (timestamp)=>{
+  //     if (!start)  {
+  //       start = timestamp;
+  //       lastUpdated = timestamp;
+  //     }
+  //     var progress = timestamp - start;
+  //
+  //     if (timestamp-lastUpdated > 50 && this.state.tickerBelt.length !== 0) {
+  //       lastUpdated = timestamp;
+  //       if (progress > timeToComplete ||
+  //           prevTextLength !== this.state.tickerBelt.length) {
+  //         // Reset after completion
+  //         rollingText.textContent = this.state.tickerBelt;
+  //         textWidth = rollingText.scrollWidth;
+  //         windowWidth = window.innerWidth;
+  //         totalMoveLength = windowWidth + textWidth;
+  //
+  //         start = timestamp;
+  //         rollingHeader.style.transform = `translate3d(${ totalMoveLength - textWidth - offsetLeft }px, 0, 0)`;
+  //         prevTextLength = this.state.tickerBelt.length;
+  //       } else {
+  //         rollingHeader.style.transform = `translate3d(${ totalMoveLength * (1 - progress/timeToComplete) - offsetLeft - textWidth }px, 0, 0)`;
+  //       }
+  //     }
+  //     window.requestAnimationFrame(step);
+  //   };
+  //
+  //   window.requestAnimationFrame(step);
+  // }
 
   updateTickerBelt(stockData) {
     console.log("updateTickerBelt");
@@ -120,7 +120,6 @@ class StockMain extends Component {
       if (typeof symbol === "string") {
 
       let latest = stockData[symbol].get('original').last();
-      // let latest = dataArr[dataArr.length-1];
       let tickerStr = `${latest.symbol}: H${latest.high} L${latest.low}`;
 
       tickerInfo.push(tickerStr);

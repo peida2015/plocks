@@ -148,13 +148,25 @@ img.chart-icons {
 /*Rolling stock info*/
 #rolling {
   position: relative;
+  transform: translate(0,0);
+  animation-name: rolling;
+  animation-duration: 20s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
 }
 
 #rolling-text {
-  background: powderblue;
-  color: #2a4870;
+  background: black;
+  color: yellow;
+  /*no wrapping of long ticker belt*/
+  white-space: pre;
 }
 
+@keyframes rolling {
+  0% { transform: translate(90vw, 0) }
+  50% { transform: translate(-5vw, 0) }
+  100% { transform: translate(-100vw, 0) }
+}
 
 /* Timer */
 span.timer {
