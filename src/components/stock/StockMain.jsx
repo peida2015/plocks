@@ -27,7 +27,7 @@ class StockMain extends Component {
     this.buildAddPanel.bind(this);
 
     // Default height and width
-    this.state = { width: 500, height: 400, tickerBelt: "" }
+    this.state = { width: 500, height: 400, tickerBelt: "Loading ticker info" }
   }
 
   componentWillMount() {

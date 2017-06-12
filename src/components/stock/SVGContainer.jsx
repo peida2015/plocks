@@ -87,15 +87,20 @@ class SVG extends Component {
     this.getXScale();
     this.getYScale();
     let graph = this.buildGraph();
+    let stockData = this.props.stockData;
+    let change = stockData[stockData.length-1].open - stockData[0].open;
+    let pctChange = change/stockData[0].open;
+    let symbolPct = this.props.width > 600 ? "40%" : "30%";
 
     return (
       <div className="centered-block">
         <svg width={ this.props.width }
               height={ this.props.height }>
-          <text className="symbol"
-                transform={`translate(${ this.props.width/2 },
-                                      ${ this.yMargin })`}>
-                { this.props.stockData[0].symbol }
+          <text className={`symbol ${ change >=0 ? "pos" : "neg" }` }
+                style={ { transform: `translate(calc(${ symbolPct }),
+                                      ${ this.yMargin }px)` } }>
+                <tspan>{ this.props.stockData[0].symbol }</tspan>
+                <tspan dx="3em">{ d3.format('+.2%')(pctChange) }</tspan>
           </text>
           <Axes xScale={ this.xScale }
                 yScale={ this.yScale }
