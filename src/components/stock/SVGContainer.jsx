@@ -28,8 +28,8 @@ class SVG extends Component {
   getXScale() {
     var stockData = this.props.stockData;
 
-    this.xMargin = Math.max(20, Math.min(50, this.props.width/16));
-    this.yMargin = Math.max(20, Math.min(50, this.props.height/16));
+    this.xMargin = this.props.width > 500 ? Math.max(10, Math.min(50, this.props.width/16)) : 5;
+    this.yMargin = Math.max(10, Math.min(50, this.props.height/16));
 
     var domain = [],
         range = [],
@@ -95,15 +95,17 @@ class SVG extends Component {
     let stockData = this.props.stockData;
     let change = stockData[stockData.length-1].open - stockData[0].open;
     let pctChange = change/stockData[0].open;
-    let symbolPct = this.props.width > 600 ? "40%" : "30%";
+    let symbolPos = this.props.width > 600 ? 0.4 : 0.3;
 
     return (
       <div className="centered-block">
-        <svg width={ this.props.width }
-              height={ this.props.height }>
+        <svg width={ this.props.width + "px" }
+              height={ this.props.height + "px" }>
           <text className={`symbol ${ change >=0 ? "pos" : "neg" }` }
-                style={ { transform: `translate(calc(${ symbolPct }),
-                                      ${ this.yMargin }px)` } }>
+                style={ {
+                  transform: `translate(${ symbolPos * this.props.width }px,
+                                        ${ this.yMargin }px)`
+                } }>
                 <tspan>{ this.props.stockData[0].symbol }</tspan>
                 <tspan dx="3em">{ d3.format('+.2%')(pctChange) }</tspan>
           </text>

@@ -70,8 +70,7 @@ class Axes extends Component {
           <line className="grid"
                 x2={ this.props.width }></line>
           <text
-            transform="rotate(0)"
-            x="-30"
+            x={ this.props.xMargin <= 10 ? "10" : "-30"  }
             y="0"
             style={{ fontSize: this.fontSize }}>{ tick }</text>
       </g>)

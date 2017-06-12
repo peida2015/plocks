@@ -23,11 +23,12 @@ class StockMain extends Component {
   constructor(props) {
     super(props);
 
+    this.resizeListener = this.resizeListener.bind(this);
     this.buildCharts.bind(this);
     this.buildAddPanel.bind(this);
 
     // Default height and width
-    this.state = { width: 500, height: 400, tickerBelt: "Loading ticker info" }
+    this.state = { width: 500, height: 400, tickerBelt: "Loading ticker info..." }
   }
 
   componentWillMount() {
@@ -36,6 +37,8 @@ class StockMain extends Component {
       browserHistory.push('/welcome');
     } else if (this.state.rawData.size === 0) {
       ApiUtils.fetchStockPrices("GOOG");
+    } else {
+      this.updateTickerBelt.call(this, this.state.rawData.toObject());
     }
 
   }
@@ -48,21 +51,14 @@ class StockMain extends Component {
     }
   }
 
-  componentDidMount() {
-    this.resizeListener = function (evt) {
-      if (document.getElementById('chartBox')) {
-        let width = document.getElementById('chartBox').clientWidth;
-        if (this.state.width !== width) {
-          this.setState({ width: width });
-        }
-      }
-
-      document.getElementById('footer-margin').style.height = document.getElementById('footer').clientHeight+"px";
-    }.bind(this);
-
-    window.addEventListener('resize', this.resizeListener);
+  componentDidUpdate(){
     this.resizeListener();
+  }
 
+  componentDidMount() {
+    window.addEventListener('resize', this.resizeListener);
+
+    this.resizeListener();
     // Start ticker belt
     // this.startTickerBeltAnimation.apply(this);
   }
@@ -113,8 +109,18 @@ class StockMain extends Component {
   //   window.requestAnimationFrame(step);
   // }
 
+  resizeListener() {
+    if (document.getElementById('chartBox')) {
+      let width = document.getElementById('chartBox').clientWidth;
+      if (this.state.width !== width * .95) {
+        this.setState({ width: width * .95 });
+      }
+    }
+
+    document.getElementById('footer-margin').style.height = document.getElementById('footer').clientHeight+"px";
+  }
+
   updateTickerBelt(stockData) {
-    console.log("updateTickerBelt");
     let tickerInfo = [];
     for (var symbol in stockData) {
       if (typeof symbol === "string") {
