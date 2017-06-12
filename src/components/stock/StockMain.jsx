@@ -27,7 +27,7 @@ class StockMain extends Component {
     this.buildAddPanel.bind(this);
 
     // Default height and width
-    this.state = { width: 500, height: 400 }
+    this.state = { width: 500, height: 400, tickerBelt: "" }
   }
 
   componentWillMount() {
@@ -37,11 +37,14 @@ class StockMain extends Component {
     } else if (this.state.rawData.size === 0) {
       ApiUtils.fetchStockPrices("GOOG");
     }
+
   }
 
   componentWillUpdate(nextProps, nextState) {
     if (nextState.currentUser.size === 0 || nextState.currentUser.get('currentUser') === null) {
       browserHistory.push('/welcome');
+    } else if (nextState.rawData.size > 0) {
+      this.updateTickerBelt.call(this, nextState.rawData.toObject());
     }
   }
 
@@ -60,33 +63,48 @@ class StockMain extends Component {
     window.addEventListener('resize', this.resizeListener);
     this.resizeListener();
 
+    // Start ticker belt
+    this.startTickerBeltAnimation.apply(this);
+  }
 
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.resizeListener);
+  }
+
+  startTickerBeltAnimation() {
     // Start rolling text animation
     var rollingHeader = document.getElementById('rolling');
     var rollingText = document.getElementById('rolling-text');
-    var textWidth = rollingText.scrollWidth;
-    var offsetLeft = rollingText.offsetParent.offsetLeft;
-    var windowWidth = window.innerWidth;
-    var totalMoveLength = windowWidth + 2 * textWidth;
+    var prevTextLength = rollingText.textContent.length;
+    var textWidth, offsetLeft, windowWidth, totalMoveLength;
+    offsetLeft = rollingText.offsetParent.offsetLeft;
     var timeToComplete = 30 * 1000;
-    var lastUpdated = null;
 
     var start = null;
+    var lastUpdated = null;
 
     var step = (timestamp)=>{
-      if (!start)  start = timestamp, lastUpdated = timestamp;
+      if (!start)  {
+        start = timestamp;
+        lastUpdated = timestamp;
+      }
       var progress = timestamp - start;
 
-      if (timestamp-lastUpdated > 50) {
+      if (timestamp-lastUpdated > 50 && this.state.tickerBelt.length !== 0) {
         lastUpdated = timestamp;
-        if (progress > timeToComplete) {
-          // Reset
+        if (progress > timeToComplete ||
+            prevTextLength !== this.state.tickerBelt.length) {
+          // Reset after completion
+          rollingText.textContent = this.state.tickerBelt;
+          textWidth = rollingText.scrollWidth;
           windowWidth = window.innerWidth;
-          totalMoveLength = windowWidth + 2 * textWidth;
+          totalMoveLength = windowWidth + textWidth;
+
           start = timestamp;
           rollingHeader.style.left = totalMoveLength - textWidth - offsetLeft + "px";
+          prevTextLength = this.state.tickerBelt.length;
         } else {
-          rollingHeader.style.left = totalMoveLength * (1 - (progress % timeToComplete)/timeToComplete) - offsetLeft - textWidth + "px";
+          rollingHeader.style.left = totalMoveLength * (1 - progress/timeToComplete) - offsetLeft - textWidth + "px";
         }
       }
       window.requestAnimationFrame(step);
@@ -95,8 +113,23 @@ class StockMain extends Component {
     window.requestAnimationFrame(step);
   }
 
-  componentWillUnmount() {
-    window.removeEventListener('resize', this.resizeListener);
+  updateTickerBelt(stockData) {
+    console.log("updateTickerBelt");
+    let tickerInfo = [];
+    for (var symbol in stockData) {
+      if (typeof symbol === "string") {
+
+      let latest = stockData[symbol].get('original').last();
+      // let latest = dataArr[dataArr.length-1];
+      let tickerStr = `${latest.symbol}: H${latest.high} L${latest.low}`;
+
+      tickerInfo.push(tickerStr);
+      }
+    }
+
+    if (tickerInfo.join(" || ") !== this.state.tickerBelt){
+      this.setState({ tickerBelt: tickerInfo.join(" || ") });
+    }
   }
 
   handleAdd(evt, inputBox) {
@@ -176,8 +209,6 @@ class StockMain extends Component {
     let stockCharts = this.buildCharts(stockData);
     let addPanel = this.buildAddPanel();
 
-    // stockCharts.push(addPanel);
-
     if (stockCharts.length > 1) {
       stockCharts = this.wrapInRows(stockCharts);
     }
@@ -191,7 +222,9 @@ class StockMain extends Component {
         <Navbar fixedBottom={ true } id="footer">
             { addPanel }
             <Navbar.Header id="rolling">
-              <span id="rolling-text">Rolling stock info</span>
+              <code id="rolling-text">
+                <span>{ this.state.tickerBelt }</span>
+              </code>
             </Navbar.Header>
         </Navbar>
       </div>

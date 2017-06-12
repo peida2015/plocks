@@ -147,23 +147,13 @@ img.chart-icons {
 
 /*Rolling stock info*/
 #rolling {
-  /*animation-name: rolling-text;
-  animation-duration: 40s;
-  animation-iteration-count: infinite;
-  animation-timing-function: linear;*/
   position: relative;
-  background-color: lightyellow;
-  color: darkgreen;
-
-  /*backface-visibility: hidden;
-  perspective: 1000;*/
 }
 
-/*@keyframes rolling-text {
-  0% { left: 110%; transform: translateZ(0); }
-  50% { left: 40%; transform: translateZ(0); }
-  100% { left: -30%; transform: translateZ(0); }
-}*/
+#rolling-text {
+  background: powderblue;
+  color: #2a4870;
+}
 
 
 /* Timer */
