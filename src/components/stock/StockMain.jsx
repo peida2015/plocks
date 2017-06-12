@@ -224,7 +224,7 @@ class StockMain extends Component {
           { stockCharts }
         </Grid>
         <div id="footer-margin"></div>
-        <Navbar fixedBottom={ true } id="footer">
+        <Navbar fixedBottom={ true } id="footer" fluid={ true }>
             { addPanel }
             <Navbar.Header id="rolling">
               <code id="rolling-text">
