@@ -31,10 +31,12 @@ class Stock extends Component {
   }
 
   componentWillMount() {
-    let symbol = this.props.params.stock.toUpperCase();
+    let symbol = this.props.params.stock;
+    let path = this.props.location.pathname;
+
     // Check authentication or preload data;
     if (this.state.currentUser.size === 0 || this.state.currentUser.get('currentUser') === null) {
-      window.localStorage.setItem("__REDIRECTED_FROM_STOCK", symbol);
+      window.localStorage.setItem("__REDIRECTED_FROM_STOCK", path);
       browserHistory.push('/welcome');
     } else if (this.state.rawData.size === 0 || this.state.rawData.get(symbol).size === 0) {
       ApiUtils.fetchStockPrices(symbol);
@@ -43,12 +45,24 @@ class Stock extends Component {
 
   componentWillUpdate(nextProps, nextState) {
     let symbol = this.props.params.stock.toUpperCase();
-
-    if (nextState.currentUser.size === 0 || nextState.currentUser.get('currentUser') === null) {
+    if (nextState.currentUser.size === 0 ||
+          nextState.currentUser.get('currentUser') === null) {
       window.localStorage.setItem("__REDIRECTED_FROM_STOCK", symbol);
       browserHistory.push('/welcome');
     } else {
+      // Forget redirect route
       window.localStorage.removeItem("__REDIRECTED_FROM_STOCK");
+    }
+  }
+
+  componentDidUpdate(){
+    // Set chartType if params is present
+    let allowedTypes = { candlestick: true, linegraph: true };
+    let chartType = allowedTypes[this.props.params.chartType] ?
+                this.props.params.chartType : null;
+
+    if (chartType && this.state.chartType !== chartType) {
+      this.setState({ chartType: chartType });
     }
   }
 
@@ -102,11 +116,11 @@ class Stock extends Component {
   }
 
   setLG() {
-    this.setState({ chartType: "linegraph" });
+    browserHistory.replace(`/stock/${this.props.params.stock}/linegraph`);
   }
 
   setCS() {
-    this.setState({ chartType: "candlestick" });
+    browserHistory.replace(`/stock/${this.props.params.stock}/candlestick`)
   }
 
   render () {
@@ -129,16 +143,18 @@ class Stock extends Component {
             <Navbar.Form pullRight>
               <InputGroup>
                 <InputGroup.Button>
-                  <Button onClick={ this.setLG }
-                          active={ !candlestickActive }
+                    <Button active={ !candlestickActive }
+                          onClick={ this.setLG }
                           bsStyle={ candlestickActive ? "default" : "info" }>
-                          LG</Button>
+                            LG
+                    </Button>
                 </InputGroup.Button>
                 <InputGroup.Button>
-                  <Button onClick={ this.setCS }
-                          active={ candlestickActive }
+                    <Button active={ candlestickActive }
+                          onClick={ this.setCS }
                           bsStyle={ !candlestickActive ? "default" : "info" }>
-                          CS</Button>
+                          CS
+                    </Button>
                 </InputGroup.Button>
               </InputGroup>
             </Navbar.Form>
