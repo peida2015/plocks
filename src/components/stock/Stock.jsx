@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import CurrentUserStore from '../../stores/CurrentUserStore';
 import StockStore from '../../stores/StockStore';
-import { browserHistory, Link } from 'react-router';
+import { browserHistory } from 'react-router';
 import { Container } from 'flux/utils';
 import ApiUtils from '../../ApiUtils/ApiUtils';
 import SVG from './SVGContainer';
-import { Button, Navbar, Nav, NavItem, InputGroup } from 'react-bootstrap';
+import { Button, Navbar, InputGroup, Grid, Row, Col } from 'react-bootstrap';
 
 class Stock extends Component {
   static getStores() {
@@ -123,6 +123,10 @@ class Stock extends Component {
     browserHistory.replace(`/stock/${this.props.params.stock}/candlestick`)
   }
 
+  backToMain() {
+    browserHistory.push('/stocks');
+  }
+
   render () {
     let stockChart = this.buildChart();
     let candlestickActive = this.state.chartType === "candlestick";
@@ -135,29 +139,35 @@ class Stock extends Component {
             </div>
           </div>
           <Navbar fixedBottom fluid={ true }>
-            <Nav>
-              <NavItem href="/stocks">
-                Back To StockMain
-              </NavItem>
-            </Nav>
-            <Navbar.Form pullRight>
-              <InputGroup>
-                <InputGroup.Button>
-                    <Button active={ !candlestickActive }
+            <Navbar.Header>
+            <Grid>
+              <Row>
+                <Col xs={4} className="footer-vertical-align">
+                  <Button onClick={ this.backToMain }>
+                    Back To StockMain
+                  </Button>
+                </Col>
+                <Col xs={1} xsPush={5} className="footer-vertical-align">
+                    <InputGroup>
+                      <InputGroup.Button>
+                        <Button active={ !candlestickActive }
                           onClick={ this.setLG }
                           bsStyle={ candlestickActive ? "default" : "info" }>
-                            LG
-                    </Button>
-                </InputGroup.Button>
-                <InputGroup.Button>
-                    <Button active={ candlestickActive }
+                          LG
+                        </Button>
+                      </InputGroup.Button>
+                      <InputGroup.Button>
+                        <Button active={ candlestickActive }
                           onClick={ this.setCS }
                           bsStyle={ !candlestickActive ? "default" : "info" }>
                           CS
-                    </Button>
-                </InputGroup.Button>
-              </InputGroup>
-            </Navbar.Form>
+                        </Button>
+                      </InputGroup.Button>
+                    </InputGroup>
+                </Col>
+              </Row>
+            </Grid>
+          </Navbar.Header>
           </Navbar>
       </div>);
   }
