@@ -4,6 +4,7 @@ import StockStore from '../../stores/StockStore';
 import { browserHistory } from 'react-router';
 import { Container } from 'flux/utils';
 import ApiUtils from '../../ApiUtils/ApiUtils';
+import StockActions from '../../actions/StockActions';
 import SVG from './SVGContainer';
 import Timeline from './Timeline';
 import { Button, Navbar, InputGroup, Grid, Row, Col } from 'react-bootstrap';
@@ -150,14 +151,43 @@ class Stock extends Component {
     browserHistory.push('/stocks');
   }
 
+  selectDateRange(date1, date2) {
+    var symbol = this.props.params.stock.toUpperCase();
+    let stockData = this.state.rawData.get(symbol).get('original').toArray();
+    let idx1 = this.bsDate.call(this, stockData, date1);
+    let idx2 = this.bsDate.call(this, stockData, date2);
+    stockData = stockData.slice(Math.min(idx1, idx2), Math.max(idx1, idx2));
+
+    StockActions.getFilteredPrices(stockData);
+  }
+
+  bsDate = function (data, date) {
+    // A number is returned for any date input.
+    if (data.length <= 1) { return 0;  };
+
+    var oneDay = 1000*60*60*24;
+
+    var midIdx = Math.floor(data.length/2);
+
+    var timeDiff = data[midIdx].tradingDay - date;
+
+    // There is no exact Datetime match, match tolerance is oneDay.
+    if (Math.abs(timeDiff) < oneDay) { return midIdx; };
+
+    if (timeDiff > 0) {
+      return this.bsDate(data.slice(0, midIdx), date);
+    } else {
+      return midIdx + this.bsDate(data.slice(midIdx, data.length), date);
+    };
+  }
+
   buildFooter() {
     let candlestickActive = this.state.chartType === "candlestick";
 
     let timeline = this.state.timescale ? (
-    <Timeline timescale={ this.state.timescale } >
+    <Timeline timescale={ this.state.timescale }
+              selectDateRange={ this.selectDateRange.bind(this) }>
     </Timeline>): "";
-
-
 
     let dateSelector = (
       <Col xsHidden sm={8} md={9}>

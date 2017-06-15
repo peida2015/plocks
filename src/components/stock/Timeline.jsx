@@ -11,7 +11,20 @@ class Timeline extends Component {
       dragging: false,
       currDragHandle: null,
       handle1Pos: 0,
-      handle2Pos: this.props.timescale.range()[1]
+      handle2Pos: this.props.timescale.range()[1],
+      lastUpdated: Date.now()
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    let currLength = this.props.timescale.range()[1];
+    let nextLength = nextProps.timescale.range()[1];
+
+    if (currLength !== nextLength) {
+      this.setState({
+        handle1Pos: this.state.handle1Pos / currLength * nextLength,
+        handle2Pos: this.state.handle2Pos / currLength * nextLength
+      })
     }
   }
 
@@ -121,15 +134,26 @@ class Timeline extends Component {
     // Reset position only if dragging (with mouseDown)
     if(this.state.dragging) {
       let handles = document.getElementsByClassName('handle');
+
       if (evt.target === handles[0] &&
             this.state.currDragHandle === handles[0]) {
+        let newPos = this.state.handle1Pos + evt.offsetX;
+        // Put bounds on where handle1 can be
+        newPos = Math.max(0, Math.min(newPos, this.state.handle2Pos - 30));
+
         this.setState({
-          handle1Pos: this.state.handle1Pos + evt.offsetX
-        })
+          handle1Pos: newPos
+        });
       } else if (evt.target === handles[1] &&
             this.state.currDragHandle === handles[1]){
+        let newPos = this.state.handle2Pos + evt.offsetX;
+
+        // Put bounds on where handle1 can be
+        newPos = Math.max(this.state.handle1Pos + 30,
+                        Math.min(newPos, this.props.timescale.range()[1]));
+
         this.setState({
-          handle2Pos: this.state.handle2Pos + evt.offsetX
+          handle2Pos: newPos
         })
       }
     }
@@ -142,6 +166,18 @@ class Timeline extends Component {
       this.state.currDragHandle.addEventListener('mousemove', this.dragHandler);
     } else if (prevState.dragging) {
       this.state.currDragHandle.removeEventListener('mousemove', this.dragHandler);
+    }
+
+    var timestamp = Date.now();
+
+    if (prevState.dragging && timestamp - this.state.lastUpdated > 300) {
+      this.setState({
+        lastUpdated: timestamp
+      })
+
+      let date1 = this.props.timescale.invert(this.state.handle1Pos);
+      let date2 = this.props.timescale.invert(this.state.handle2Pos);
+      this.props.selectDateRange(date1, date2);
     }
   }
 
