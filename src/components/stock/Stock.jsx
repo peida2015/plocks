@@ -5,7 +5,9 @@ import { browserHistory } from 'react-router';
 import { Container } from 'flux/utils';
 import ApiUtils from '../../ApiUtils/ApiUtils';
 import SVG from './SVGContainer';
+import Timeline from './Timeline';
 import { Button, Navbar, InputGroup, Grid, Row, Col } from 'react-bootstrap';
+import * as d3 from 'd3';
 
 class Stock extends Component {
   static getStores() {
@@ -24,10 +26,16 @@ class Stock extends Component {
 
     this.setLG = this.setLG.bind(this);
     this.setCS = this.setCS.bind(this);
+    this.buildFooter = this.buildFooter.bind(this);
     this.buildChart.bind(this);
 
     // Default height and width
-    this.state = { width: 1000, height: 400, chartType: "candlestick" }
+    this.state = {
+      width: 1000,
+      height: 400,
+      timescale: null,
+      chartType: "candlestick"
+    }
   }
 
   componentWillMount() {
@@ -61,8 +69,23 @@ class Stock extends Component {
     let chartType = allowedTypes[this.props.params.chartType] ?
                 this.props.params.chartType : null;
 
+
     if (chartType && this.state.chartType !== chartType) {
       this.setState({ chartType: chartType });
+    }
+
+    let bluebox = document.getElementById('bluebox');
+    if (bluebox && this.state.rawData.size > 0 && (!this.state.timescale ||
+           this.state.timescale.range()[1] !== bluebox.clientWidth)) {
+
+      let stockData = this.state.rawData
+              .get(this.props.params.stock).get('original');
+      let domain = [stockData.first().tradingDay,
+                    stockData.last().tradingDay];
+      let range = [0, bluebox.clientWidth];
+      this.setState({
+        timescale: d3.scaleTime().domain(domain).range(range)
+      });
     }
   }
 
@@ -127,9 +150,60 @@ class Stock extends Component {
     browserHistory.push('/stocks');
   }
 
+  buildFooter() {
+    let candlestickActive = this.state.chartType === "candlestick";
+
+    let timeline = this.state.timescale ? (
+    <Timeline timescale={ this.state.timescale } >
+    </Timeline>): "";
+
+
+
+    let dateSelector = (
+      <Col xsHidden sm={8} md={9}>
+        <div id="bluebox" className="footer-vertical-align content"></div>
+        { timeline }
+      </Col>
+    );
+
+    let chartTypeSelector = (
+      <Col xs={1} xsPush={3} smPush={0} className="footer-vertical-align">
+            <InputGroup>
+              <InputGroup.Button>
+                <Button active={ !candlestickActive }
+                  onClick={ this.setLG }
+                  bsStyle={ candlestickActive ? "default" : "info" }>
+                  LG
+                </Button>
+              </InputGroup.Button>
+              <InputGroup.Button>
+                <Button active={ candlestickActive }
+                  onClick={ this.setCS }
+                  bsStyle={ !candlestickActive ? "default" : "info" }>
+                  CS
+                </Button>
+              </InputGroup.Button>
+            </InputGroup>
+        </Col>
+    )
+
+    return (<Grid>
+      <Row>
+        <Col xs={3} md={2} className="footer-vertical-align">
+          <Button onClick={ this.backToMain }>
+            Back To StockMain
+          </Button>
+        </Col>
+        { dateSelector }
+        { chartTypeSelector }
+      </Row>
+    </Grid>);
+  }
+
+
   render () {
     let stockChart = this.buildChart();
-    let candlestickActive = this.state.chartType === "candlestick";
+    let footerContents = this.buildFooter();
 
     return (
       <div>
@@ -140,34 +214,8 @@ class Stock extends Component {
           </div>
           <Navbar fixedBottom fluid={ true }>
             <Navbar.Header>
-            <Grid>
-              <Row>
-                <Col xs={4} className="footer-vertical-align">
-                  <Button onClick={ this.backToMain }>
-                    Back To StockMain
-                  </Button>
-                </Col>
-                <Col xs={1} xsPush={5} className="footer-vertical-align">
-                    <InputGroup>
-                      <InputGroup.Button>
-                        <Button active={ !candlestickActive }
-                          onClick={ this.setLG }
-                          bsStyle={ candlestickActive ? "default" : "info" }>
-                          LG
-                        </Button>
-                      </InputGroup.Button>
-                      <InputGroup.Button>
-                        <Button active={ candlestickActive }
-                          onClick={ this.setCS }
-                          bsStyle={ !candlestickActive ? "default" : "info" }>
-                          CS
-                        </Button>
-                      </InputGroup.Button>
-                    </InputGroup>
-                </Col>
-              </Row>
-            </Grid>
-          </Navbar.Header>
+              { footerContents }
+            </Navbar.Header>
           </Navbar>
       </div>);
   }

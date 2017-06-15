@@ -41,6 +41,21 @@ nav.navBG {
   cursor: pointer;
 }
 
+.unselectable {
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+
+#bluebox {
+  min-height: 20px;
+  width: 100%;
+  background: lightblue;
+  border-left: 1px solid black;
+  border-right: 1px solid black;
+  border-bottom: 1px solid black;
+}
+
 .title-font {
   font-family: 'Syncopate', serif;
 }
