@@ -4,7 +4,7 @@ import { Container } from 'flux/utils';
 import CurrentUserStore from '../stores/CurrentUserStore';
 import FirebaseStore from '../stores/FirebaseStore';
 import { Navbar as RBNavbar }  from 'react-bootstrap';
-import { Nav, NavItem, Button } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 
 class Navbar extends Component {
   static getStores() {
@@ -51,7 +51,6 @@ class Navbar extends Component {
       <div>
           {/*<!-- navbar begins -->*/}
         <RBNavbar fixedTop={true} className="navBG">
-          { /*<!-- navbar-custom deleted from class -->*/ }
             <RBNavbar.Header>
               <RBNavbar.Brand>
                 <a href="/welcome">
@@ -63,7 +62,6 @@ class Navbar extends Component {
               </RBNavbar.Brand>
               <RBNavbar.Toggle />
             </RBNavbar.Header>
-
           {/*<!-- Collect the nav links, forms, and other content for toggling -->*/}
             <RBNavbar.Collapse>
               { showName }
