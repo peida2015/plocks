@@ -28,16 +28,17 @@ class Axes extends Component {
     path.lineTo(length, 0);
     path.lineTo(length, 3);
     let wide = this.props.width > 500;
-    let tall = this.props.height > 450;
+    let tall = this.props.height > 430;
 
     // Generate ticks on x-axis.
+    var tickLabel;
     var xTicks = xScale.ticks(wide ? 10 : 3);
     var excessTicks = xTicks.length > 8;
 
     xTicks = xTicks.map((tick, idx)=>{
       if (longerThanSixMonths) {
         // Month and date as tick label
-        var tickLabel = (
+        tickLabel = (
           <text className="date"
             transform="rotate(-0)"
             x="-10"
@@ -49,9 +50,9 @@ class Axes extends Component {
         )
       } else if (excessTicks && idx % 2 === 0) {
         // Skip every other labels if there are more than 8 ticks
-        var tickLabel = "";
+        tickLabel = "";
       } else {
-        var tickLabel = (<text className="date"
+        tickLabel = (<text className="date"
                             transform="rotate(-0)"
                             x="-20"
                             y={ tall ? "1.4em" : "-1.4em"}
@@ -83,8 +84,7 @@ class Axes extends Component {
   buildYAxis() {
     let yScale = this.props.yScale;
     // Generate ticks on y-axis.
-    let wide = this.props.width > 500;
-    let tall = this.props.height > 450;
+    let tall = this.props.height > 430;
     let yTicks = yScale.ticks(tall ? 10 : 4).map((tick)=>{
     return (
       <g className='tick'

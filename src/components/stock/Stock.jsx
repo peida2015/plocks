@@ -27,6 +27,7 @@ class Stock extends Component {
 
     this.setLG = this.setLG.bind(this);
     this.setCS = this.setCS.bind(this);
+    this.resizeListener = this.resizeListener.bind(this);
     this.buildFooter = this.buildFooter.bind(this);
     this.buildChart.bind(this);
 
@@ -62,6 +63,7 @@ class Stock extends Component {
       // Forget redirect route
       window.localStorage.removeItem("__REDIRECTED_FROM_STOCK");
     }
+    this.resizeListener();
   }
 
   componentDidUpdate(){
@@ -75,8 +77,10 @@ class Stock extends Component {
       this.setState({ chartType: chartType });
     }
 
+    // Adjust timescale range for the dateSelector
     let bluebox = document.getElementById('bluebox');
-    if (bluebox && this.state.rawData.size > 0 && (!this.state.timescale ||
+
+    if (bluebox && bluebox.clientWidth !== 0 && this.state.rawData.size > 0 && (!this.state.timescale ||
            this.state.timescale.range()[1] !== bluebox.clientWidth)) {
 
       let stockData = this.state.rawData
@@ -91,26 +95,7 @@ class Stock extends Component {
   }
 
   componentDidMount() {
-    this.resizeListener = function (evt) {
-      if (document.getElementById('chartBox')) {
-        let width = document.getElementById('chartBox').clientWidth;
-        let height = document.getElementById('chartBox').clientHeight;
-        if (this.state.width !== width) {
-          this.setState({
-            width: width,
-            height: height
-          });
-        }
-      } else {
-        this.setState({
-          width: window.innerWidth*0.96,
-          height: window.innerHeight*0.9
-        })
-      }
-    }.bind(this);
-
     window.addEventListener('resize', this.resizeListener);
-    this.resizeListener();
   }
 
   componentWillUnmount() {
@@ -166,9 +151,7 @@ class Stock extends Component {
     if (data.length <= 1) { return 0;  };
 
     var oneDay = 1000*60*60*24;
-
     var midIdx = Math.floor(data.length/2);
-
     var timeDiff = data[midIdx].tradingDay - date;
 
     // There is no exact Datetime match, match tolerance is oneDay.
@@ -230,6 +213,23 @@ class Stock extends Component {
     </Grid>);
   }
 
+  resizeListener(evt) {
+    if (document.getElementById('chartBox')) {
+      let width = document.getElementById('chartBox').clientWidth;
+      let height = document.getElementById('chartBox').clientHeight;
+      if (this.state.width !== width || this.state.height !== height) {
+        this.setState({
+          width: width,
+          height: height
+        });
+      }
+    } else {
+      this.setState({
+        width: window.innerWidth*0.96,
+        height: window.innerHeight*0.8
+      })
+    }
+  }
 
   render () {
     let stockChart = this.buildChart();
