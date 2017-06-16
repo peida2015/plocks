@@ -11,8 +11,13 @@ class Axes extends Component {
 
   buildXAxis() {
     let xScale = this.props.xScale;
+    let domain = xScale.domain();
+    let sixMonths = 6 * 30 * 24 * 60 * 60 * 1000;
+    let longerThanSixMonths = (domain[domain.length-1] - domain[0]) > sixMonths;
+
     var monthFormat = d3.timeFormat("%b");
     var yearFormat = d3.timeFormat("'%y");
+    var monthDateFormat = d3.timeFormat("%m/%d");
 
     // Draw x-axis line
     let path = d3.path();
@@ -25,9 +30,37 @@ class Axes extends Component {
     let wide = this.props.width > 500;
     let tall = this.props.height > 450;
 
-
+    if (!tall) debugger
     // Generate ticks on x-axis.
-    let xTicks = xScale.ticks(wide ? 10 : 3).map((tick)=>{
+    var xTicks = xScale.ticks(wide ? 10 : 3);
+    var excessTicks = xTicks.length > 8;
+
+    xTicks = xTicks.map((tick, idx)=>{
+      if (longerThanSixMonths) {
+        // Month and date as tick label
+        var tickLabel = (
+          <text className="date"
+            transform="rotate(-0)"
+            x="-10"
+            y="0"
+            style={{ fontSize: this.fontSize }}>
+            <tspan dy={ tall ? "1.4em" : "-1.4em"}>{ monthFormat(tick) }</tspan>
+            <tspan x="-0.5em" dy={ "1.4em" }>{ yearFormat(tick) }</tspan>
+          </text>
+        )
+      } else if (excessTicks && idx % 2 === 0) {
+        // Skip every other labels if there are more than 8 ticks
+        var tickLabel = "";
+      } else {
+        var tickLabel = (<text className="date"
+                            transform="rotate(-0)"
+                            x="-10"
+                            y={ tall ? "1.4em" : "-1.4em"}
+                            style={{ fontSize: this.fontSize }}>
+                            { monthDateFormat(tick) }
+                          </text>);
+      };
+
     return (
       <g className='tick'
           key={ tick.toLocaleDateString()}
@@ -35,14 +68,7 @@ class Axes extends Component {
           <line x2='0' y2='5'></line>
           <line className="grid"
                 y2={ -this.props.height }></line>
-          <text className="date"
-            transform="rotate(-0)"
-            x="-10"
-            y="0"
-            style={{ fontSize: this.fontSize }}>
-              <tspan dy={ tall ? "1.4em" : "-1.4em"}>{ monthFormat(tick) }</tspan>
-              <tspan x="-0.5em" dy={ tall ? "1.4em" : "-1.4em"}>{ yearFormat(tick) }</tspan>
-          </text>
+          { tickLabel }
       </g>)
     });
 
@@ -60,7 +86,6 @@ class Axes extends Component {
     // Generate ticks on y-axis.
     let wide = this.props.width > 500;
     let tall = this.props.height > 450;
-
     let yTicks = yScale.ticks(tall ? 10 : 4).map((tick)=>{
     return (
       <g className='tick'
