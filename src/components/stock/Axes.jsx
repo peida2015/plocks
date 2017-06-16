@@ -30,7 +30,6 @@ class Axes extends Component {
     let wide = this.props.width > 500;
     let tall = this.props.height > 450;
 
-    if (!tall) debugger
     // Generate ticks on x-axis.
     var xTicks = xScale.ticks(wide ? 10 : 3);
     var excessTicks = xTicks.length > 8;
@@ -54,7 +53,7 @@ class Axes extends Component {
       } else {
         var tickLabel = (<text className="date"
                             transform="rotate(-0)"
-                            x="-10"
+                            x="-20"
                             y={ tall ? "1.4em" : "-1.4em"}
                             style={{ fontSize: this.fontSize }}>
                             { monthDateFormat(tick) }
