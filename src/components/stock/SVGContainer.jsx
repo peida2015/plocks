@@ -104,7 +104,8 @@ class SVG extends Component {
           <text className={`symbol ${ change >=0 ? "pos" : "neg" }` }
                 style={ {
                   transform: `translate(${ symbolPos * this.props.width }px,
-                                        ${ this.yMargin }px)`
+                                        ${ this.yMargin }px)`,
+                  fontSize: "20px"
                 } }>
                 <tspan>{ this.props.stockData[0].symbol }</tspan>
                 <tspan dx="3em">{ d3.format('+.2%')(pctChange) }</tspan>
