@@ -119,6 +119,7 @@ class Timeline extends Component {
   }
 
   beginDrag(evt) {
+    evt.target.style.borderColor = "red transparent transparent transparent";
     if (!this.state.dragging) {
       this.setState({ dragging: true,
         currDragHandle: evt.target })
@@ -126,6 +127,7 @@ class Timeline extends Component {
   }
 
   endDrag(evt) {
+    evt.target.style.borderColor = "black transparent transparent transparent";
     this.setState({ dragging: false,
                     currDragHandle: evt.target })
   }
