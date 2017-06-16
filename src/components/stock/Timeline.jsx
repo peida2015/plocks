@@ -99,8 +99,21 @@ class Timeline extends Component {
       borderRight: "15px solid transparent",
       top: "0px"
     }
+
+    let shadeboxStyle = {
+      position: "absolute",
+      height: "27px",
+      width: `${ this.state.handle2Pos - this.state.handle1Pos }px`,
+      left: `${ this.state.handle1Pos }px`,
+      background: "black",
+      opacity: "0.4"
+    }
+
     return (
       <div style={{ top: "0px", position: "absolute" }}>
+        <div className="shadebox"
+              style={ shadeboxStyle }>
+        </div>
         <div className="handle"
             style={ {...styleProps,
               left: `${ this.state.handle1Pos - 15}px`,
@@ -150,7 +163,7 @@ class Timeline extends Component {
             this.state.currDragHandle === handles[1]){
         let newPos = this.state.handle2Pos + evt.offsetX;
 
-        // Put bounds on where handle1 can be
+        // Put bounds on where handle2 can be
         newPos = Math.max(this.state.handle1Pos + 30,
                         Math.min(newPos, this.props.timescale.range()[1]));
 
