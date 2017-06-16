@@ -95,6 +95,7 @@ class Stock extends Component {
   }
 
   componentDidMount() {
+    this.resizeListener();
     window.addEventListener('resize', this.resizeListener);
   }
 
