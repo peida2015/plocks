@@ -9,6 +9,8 @@ import SVG from './SVGContainer';
 import Timeline from './Timeline';
 import { Button, Navbar, InputGroup, Grid, Row, Col } from 'react-bootstrap';
 import * as d3 from 'd3';
+import lgIcon from '../../../public/lg-icon.png';
+import csIcon from '../../../public/cs-icon.png';
 
 class Stock extends Component {
   static getStores() {
@@ -186,15 +188,17 @@ class Stock extends Component {
               <InputGroup.Button>
                 <Button active={ !candlestickActive }
                   onClick={ this.setLG }
-                  bsStyle={ candlestickActive ? "default" : "info" }>
-                  LG
+                  bsStyle={ candlestickActive ? "default" : "info" }
+                  style={{ padding: "3px 6px" }}>
+                  <img src={ lgIcon } width="25" role="presentation"/>
                 </Button>
               </InputGroup.Button>
               <InputGroup.Button>
                 <Button active={ candlestickActive }
                   onClick={ this.setCS }
-                  bsStyle={ !candlestickActive ? "default" : "info" }>
-                  CS
+                  bsStyle={ !candlestickActive ? "default" : "info" }
+                  style={{ padding: "3px 6px" }}>
+                  <img src={ csIcon } width="25" role="presentation"/>
                 </Button>
               </InputGroup.Button>
             </InputGroup>
