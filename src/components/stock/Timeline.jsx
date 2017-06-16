@@ -164,8 +164,10 @@ class Timeline extends Component {
 
     if (handles && this.state.dragging) {
       this.state.currDragHandle.addEventListener('mousemove', this.dragHandler);
+      this.state.currDragHandle.addEventListener('mouseleave', this.dragHandler);
     } else if (prevState.dragging) {
       this.state.currDragHandle.removeEventListener('mousemove', this.dragHandler);
+      this.state.currDragHandle.addEventListener('mouseleave', this.dragHandler);
     }
 
     var timestamp = Date.now();
