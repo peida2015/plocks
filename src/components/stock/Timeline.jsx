@@ -114,7 +114,9 @@ class Timeline extends Component {
       <div style={{ top: "0px", position: "absolute" }}
             onWheel={ this.scrollInShadebox }>
         <div className="shadebox"
-              style={ shadeboxStyle }>
+              style={ shadeboxStyle }
+              onMouseDown={ this.beginDrag.bind(this) }
+              onMouseUp={ this.endDrag.bind(this) }>
         </div>
         <div className="handle"
             style={ {...styleProps,
@@ -134,6 +136,7 @@ class Timeline extends Component {
   }
 
   beginDrag(evt) {
+    evt.stopPropagation();
     evt.target.style.borderColor = "red transparent transparent transparent";
     if (!this.state.dragging) {
       this.setState({ dragging: true,
@@ -148,9 +151,14 @@ class Timeline extends Component {
   }
 
   dragHandler(evt) {
+    var handles = document.getElementsByClassName('handle');
+    var shadebox = document.getElementsByClassName('shadebox');
+    var clientRect = evt.target.getBoundingClientRect();
+    var xRange = this.props.timescale.range()[1];
+
     // Reset position only if dragging (with mouseDown)
-    if(this.state.dragging) {
-      let handles = document.getElementsByClassName('handle');
+    if (this.state.dragging && (evt.type === "mousemove" ||
+      (evt.clientX > clientRect.right || evt.clientX < clientRect.left))) {
 
       if (evt.target === handles[0] &&
             this.state.currDragHandle === handles[0]) {
@@ -167,11 +175,37 @@ class Timeline extends Component {
 
         // Put bounds on where handle2 can be
         newPos = Math.max(this.state.handle1Pos + 30,
-                        Math.min(newPos, this.props.timescale.range()[1]));
+                        Math.min(newPos, xRange));
 
         this.setState({
           handle2Pos: newPos
         })
+      } else if (evt.target === shadebox[0] &&
+            this.state.currDragHandle === shadebox[0]) {
+          var newLeftPos = this.state.handle1Pos + evt.movementX;
+          var newRightPos = this.state.handle2Pos + evt.movementX;
+          if (Math.abs(evt.movementX) > 80) {
+            newLeftPos = this.state.handle1Pos + evt.offsetX;
+            newRightPos = this.state.handle2Pos + evt.offsetX;
+          }
+
+          if (newLeftPos < 0) {
+            this.setState({
+              handle1Pos: 0,
+              handle2Pos: this.state.handle2Pos - this.state.handle1Pos
+            })
+          } else if (newRightPos > xRange) {
+            this.setState({
+              handle1Pos: (xRange - this.state.handle2Pos) +
+                                  this.state.handle1Pos,
+              handle2Pos: xRange
+            })
+          } else {
+            this.setState({
+              handle1Pos: newLeftPos,
+              handle2Pos: newRightPos
+            })
+          }
       }
     }
   }
@@ -202,15 +236,16 @@ class Timeline extends Component {
     }
   }
 
+
   componentDidUpdate(prevProps, prevState) {
     let handles = document.getElementsByClassName('handle');
 
-    if (handles && this.state.dragging) {
+    if (this.state.currDragHandle && this.state.dragging) {
       this.state.currDragHandle.addEventListener('mousemove', this.dragHandler);
       this.state.currDragHandle.addEventListener('mouseleave', this.dragHandler);
     } else if (prevState.dragging) {
       this.state.currDragHandle.removeEventListener('mousemove', this.dragHandler);
-      this.state.currDragHandle.addEventListener('mouseleave', this.dragHandler);
+      this.state.currDragHandle.removeEventListener('mouseleave', this.dragHandler);
     }
 
     var timestamp = Date.now();
