@@ -6,6 +6,7 @@ class Timeline extends Component {
     super(props);
 
     this.dragHandler = this.dragHandler.bind(this);
+    this.scrollInShadebox = this.scrollInShadebox.bind(this);
 
     this.state={
       dragging: false,
@@ -110,7 +111,8 @@ class Timeline extends Component {
     }
 
     return (
-      <div style={{ top: "0px", position: "absolute" }}>
+      <div style={{ top: "0px", position: "absolute" }}
+            onWheel={ this.scrollInShadebox }>
         <div className="shadebox"
               style={ shadeboxStyle }>
         </div>
@@ -174,6 +176,32 @@ class Timeline extends Component {
     }
   }
 
+  scrollInShadebox(evt) {
+    let stepFactor = 5;
+
+    var newLeftPos = this.state.handle1Pos + evt.deltaY * stepFactor;
+
+    var newRightPos = this.state.handle2Pos - evt.deltaY * stepFactor;
+    if (newRightPos - newLeftPos >= 30) {
+      newLeftPos = Math.max(0, Math.min(newLeftPos, this.state.handle2Pos - 30));
+
+      newRightPos = Math.max(this.state.handle1Pos + 30, Math.min(newRightPos, this.props.timescale.range()[1]));
+
+      this.setState({
+        handle1Pos: newLeftPos,
+        handle2Pos: newRightPos
+      })
+    } else {
+      let midPoint = Math.ceil((this.state.handle1Pos +
+                                this.state.handle2Pos)/2);
+
+      this.setState({
+        handle1Pos: midPoint-15,
+        handle2Pos: midPoint+15
+      })
+    }
+  }
+
   componentDidUpdate(prevProps, prevState) {
     let handles = document.getElementsByClassName('handle');
 
@@ -187,7 +215,10 @@ class Timeline extends Component {
 
     var timestamp = Date.now();
 
-    if (prevState.dragging && timestamp - this.state.lastUpdated > 300) {
+    // Update graph if it is "long" since lastUpdated and position has changed
+    if (timestamp - this.state.lastUpdated > 300 &&
+        (this.state.handle1Pos !== prevState.handle1Pos ||
+            this.state.handle2Pos !== prevState.handle2Pos)) {
       this.setState({
         lastUpdated: timestamp
       })
