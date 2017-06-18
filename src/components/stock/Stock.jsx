@@ -31,7 +31,9 @@ class Stock extends Component {
     this.setCS = this.setCS.bind(this);
     this.resizeListener = this.resizeListener.bind(this);
     this.buildFooter = this.buildFooter.bind(this);
-    this.buildChart.bind(this);
+    this.buildDateRangeSelector = this.buildDateRangeSelector.bind(this);
+    this.buildChart = this.buildChart.bind(this);
+    this.navbarToggleHandler = this.navbarToggleHandler.bind(this);
 
     // Default height and width
     this.state = {
@@ -167,23 +169,36 @@ class Stock extends Component {
     };
   }
 
+  buildDateRangeSelector() {
+    let timeline = this.state.timescale ? (
+      <Timeline timescale={ this.state.timescale }
+        selectDateRange={ this.selectDateRange.bind(this) }>
+      </Timeline>): "";
+
+      return (
+        <Col xs={12} smOffset={1} sm={8} md={8}
+          id="dateRangeSelector"
+          key="dateRangeSelector">
+          <Navbar.Collapse>
+            <div id="bluebox" className="footer-vertical-align content"></div>
+            { timeline }
+          </Navbar.Collapse>
+        </Col>
+      );
+  }
+
   buildFooter() {
     let candlestickActive = this.state.chartType === "candlestick";
+    let dateSelector = this.buildDateRangeSelector();
 
-    let timeline = this.state.timescale ? (
-    <Timeline timescale={ this.state.timescale }
-              selectDateRange={ this.selectDateRange.bind(this) }>
-    </Timeline>): "";
-
-    let dateSelector = (
-      <Col xsHidden sm={8} md={9}>
-        <div id="bluebox" className="footer-vertical-align content"></div>
-        { timeline }
-      </Col>
-    );
+    let toggleButton = (<Col xs={2} xsOffset={1} sm={0}>
+              <Navbar.Toggle />
+            </Col>)
 
     let chartTypeSelector = (
-      <Col xs={1} xsPush={3} smPush={0} className="footer-vertical-align">
+      <Col xs={1} xsOffset={1} className="footer-vertical-align"
+            id="chartTypeSelector"
+            key="chartTypeSelector">
             <InputGroup>
               <InputGroup.Button>
                 <Button active={ !candlestickActive }
@@ -205,15 +220,18 @@ class Stock extends Component {
         </Col>
     )
 
+    let dashboardButton = (<Col xs={2} md={1} className="footer-vertical-align">
+      <Button onClick={ this.backToMain }>
+        Dashboard
+      </Button>
+    </Col>)
+
     return (<Grid>
       <Row>
-        <Col xs={3} md={2} className="footer-vertical-align">
-          <Button onClick={ this.backToMain }>
-            Back To StockMain
-          </Button>
-        </Col>
-        { dateSelector }
-        { chartTypeSelector }
+        { dashboardButton }
+        { toggleButton }
+        { window.innerWidth > 770 ? [dateSelector, chartTypeSelector] :
+          [chartTypeSelector, dateSelector] }
       </Row>
     </Grid>);
   }
@@ -236,9 +254,25 @@ class Stock extends Component {
     }
   }
 
+  navbarToggleHandler(navExpanded) {
+    if (navExpanded) {
+      let length = document.getElementById('dateRangeSelector').clientWidth;
+      let stockData = this.state.rawData
+              .get(this.props.params.stock).get('original');
+      let domain = [stockData.first().tradingDay,
+                    stockData.last().tradingDay];
+      let range = [0, length];
+      this.setState({
+        timescale: d3.scaleTime().domain(domain).range(range)
+      });
+    }
+  }
+
   render () {
     let stockChart = this.buildChart();
     let footerContents = this.buildFooter();
+
+    let dateSelector = this.buildDateRangeSelector();
 
     return (
       <div>
@@ -247,10 +281,11 @@ class Stock extends Component {
               { stockChart }
             </div>
           </div>
-          <Navbar fixedBottom fluid={ true }>
-            <Navbar.Header>
+          <Navbar fixedBottom
+                  fluid={ true }
+                  onToggle={ this.navbarToggleHandler } >
               { footerContents }
-            </Navbar.Header>
+
           </Navbar>
       </div>);
   }
