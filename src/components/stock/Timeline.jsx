@@ -11,6 +11,7 @@ class Timeline extends Component {
     this.state={
       dragging: false,
       currDragHandle: null,
+      lastTouch: null,
       handle1Pos: 0,
       handle2Pos: this.props.timescale.range()[1],
       lastUpdated: Date.now()
@@ -115,28 +116,33 @@ class Timeline extends Component {
             onWheel={ this.scrollInShadebox }>
         <div className="shadebox"
               style={ shadeboxStyle }
+              onTouchStart={ this.beginDrag.bind(this) }
               onMouseDown={ this.beginDrag.bind(this) }
+              onTouchEnd={ this.endDrag.bind(this) }
               onMouseUp={ this.endDrag.bind(this) }>
         </div>
         <div className="handle"
             style={ {...styleProps,
               left: `${ this.state.handle1Pos - 15}px`,
             }}
+            onTouchStart={ this.beginDrag.bind(this) }
             onMouseDown={ this.beginDrag.bind(this) }
+            onTouchEnd={ this.endDrag.bind(this) }
             onMouseUp={ this.endDrag.bind(this) }>
         </div>
         <div className="handle"
             style={ {...styleProps,
               left: `${ this.state.handle2Pos - 15}px`,
             }}
+            onTouchStart={ this.beginDrag.bind(this) }
             onMouseDown={ this.beginDrag.bind(this) }
+            onTouchEnd={ this.endDrag.bind(this) }
             onMouseUp={ this.endDrag.bind(this) }>
         </div>
       </div>);
   }
 
   beginDrag(evt) {
-    evt.stopPropagation();
     evt.target.style.borderColor = "red transparent transparent transparent";
     if (!this.state.dragging) {
       this.setState({ dragging: true,
@@ -147,7 +153,8 @@ class Timeline extends Component {
   endDrag(evt) {
     evt.target.style.borderColor = "black transparent transparent transparent";
     this.setState({ dragging: false,
-                    currDragHandle: evt.target })
+                    currDragHandle: evt.target,
+                    lastTouch: null })
   }
 
   dragHandler(evt) {
@@ -158,35 +165,62 @@ class Timeline extends Component {
 
     // Reset position only if dragging (with mouseDown)
     if (this.state.dragging && (evt.type === "mousemove" ||
+        evt.type === "touchmove" ||
       (evt.clientX > clientRect.right || evt.clientX < clientRect.left))) {
 
+      var newLeftPos, newRightPos;
       if (evt.target === handles[0] &&
             this.state.currDragHandle === handles[0]) {
-        let newPos = this.state.handle1Pos + evt.offsetX;
+        if (evt.offsetX) {
+          newLeftPos = this.state.handle1Pos + evt.offsetX;
+        } else {
+          newLeftPos = evt.touches[0].clientX - evt.target.offsetParent.offsetLeft;
+        }
         // Put bounds on where handle1 can be
-        newPos = Math.max(0, Math.min(newPos, this.state.handle2Pos - 30));
+        newLeftPos = Math.max(0, Math.min(newLeftPos, this.state.handle2Pos - 30));
 
         this.setState({
-          handle1Pos: newPos
+          handle1Pos: newLeftPos
         });
       } else if (evt.target === handles[1] &&
             this.state.currDragHandle === handles[1]){
-        let newPos = this.state.handle2Pos + evt.offsetX;
+        if (evt.offsetX) {
+          newRightPos = this.state.handle2Pos + evt.offsetX;
+        } else {
+          newRightPos = evt.touches[0].clientX - evt.target.offsetParent.offsetLeft;
+        }
 
         // Put bounds on where handle2 can be
-        newPos = Math.max(this.state.handle1Pos + 30,
-                        Math.min(newPos, xRange));
+        newRightPos = Math.max(this.state.handle1Pos + 30,
+                        Math.min(newRightPos, xRange));
 
         this.setState({
-          handle2Pos: newPos
+          handle2Pos: newRightPos
         })
       } else if (evt.target === shadebox[0] &&
             this.state.currDragHandle === shadebox[0]) {
-          var newLeftPos = this.state.handle1Pos + evt.movementX;
-          var newRightPos = this.state.handle2Pos + evt.movementX;
-          if (Math.abs(evt.movementX) > 80) {
-            newLeftPos = this.state.handle1Pos + evt.offsetX;
-            newRightPos = this.state.handle2Pos + evt.offsetX;
+          if (evt.movementX) {
+            newLeftPos = this.state.handle1Pos + evt.movementX;
+            newRightPos = this.state.handle2Pos + evt.movementX;
+            if (Math.abs(evt.movementX) > 80) {
+              newLeftPos = this.state.handle1Pos + evt.offsetX;
+              newRightPos = this.state.handle2Pos + evt.offsetX;
+            }
+          } else {
+            if (!this.state.lastTouch && evt.type === "touchmove") {
+              this.setState({
+                lastTouch: evt.touches[0].clientX
+              })
+              // To end the handler
+              return null;
+            } else {
+              let movementX = evt.touches[0].clientX - this.state.lastTouch;
+              newLeftPos = this.state.handle1Pos + movementX;
+              newRightPos = this.state.handle2Pos + movementX;
+              this.setState({
+                lastTouch: evt.touches[0].clientX
+              })
+            }
           }
 
           if (newLeftPos < 0) {
@@ -241,9 +275,11 @@ class Timeline extends Component {
     let handles = document.getElementsByClassName('handle');
 
     if (this.state.currDragHandle && this.state.dragging) {
+      this.state.currDragHandle.addEventListener('touchmove', this.dragHandler);
       this.state.currDragHandle.addEventListener('mousemove', this.dragHandler);
       this.state.currDragHandle.addEventListener('mouseleave', this.dragHandler);
     } else if (prevState.dragging) {
+      this.state.currDragHandle.removeEventListener('touchmove', this.dragHandler);
       this.state.currDragHandle.removeEventListener('mousemove', this.dragHandler);
       this.state.currDragHandle.removeEventListener('mouseleave', this.dragHandler);
     }
