@@ -90,6 +90,7 @@ class Linegraph extends Component {
           ${this.props.yMargin})` }>
           { linegraph }
           <rect dx="0" dy="0"
+                id="mousemoveDetectArea"
                 width={ xRange[xRange.length-1] }
                 height={ this.props.yScale.range()[0] }
                 fill="transparent"

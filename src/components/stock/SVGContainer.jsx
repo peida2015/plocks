@@ -101,6 +101,10 @@ class SVG extends Component {
       <div className="centered-block">
         <svg width={ this.props.width + "px" }
               height={ this.props.height + "px" }>
+          <rect x="0" y="0" 
+                width={ this.props.width }
+                height={ this.props.height }
+                style={ { fill: "white" } }/>
           <text className={`symbol ${ change >=0 ? "pos" : "neg" }` }
                 style={ {
                   transform: `translate(${ symbolPos * this.props.width }px,

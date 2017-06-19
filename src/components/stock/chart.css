@@ -1,23 +1,26 @@
 /* Main graph axes */
-.xAxis line,
-.xAxis tick,
-.xAxis text,
-.xAxis path,
-.yAxis line,
-.yAxis tick,
-.yAxis text,
-.yAxis path {
+.xAxis {
   stroke: blue;
   stroke-width: 0.3px;
-  opacity: 0.5;
+  opacity: 0.6;
   font-family: 'Syncopate', sans-serif;
-}
-
-.xAxis path, .yAxis path {
   fill: none
 }
 
-.xAxis .grid, .yAxis .grid {
+.yAxis {
+  stroke: blue;
+  stroke-width: 0.3px;
+  opacity: 0.6;
+  font-family: 'Syncopate', sans-serif;
+  fill: none
+}
+
+.tick {
+  stroke: none;
+  fill: blue;
+}
+
+.grid {
   stroke: gray;
   opacity: 0.7;
   stroke-dasharray: 5;
@@ -25,18 +28,29 @@
 }
 
 /* Line graph */
-.line path {
+.line {
   fill: none;
   stroke: firebrick;
   stroke-width: 1.5px
 }
 
+#mousemoveDetectArea {
+  stroke: none;
+}
+
+.layover {
+  font-family: monospace;
+  font-size: 12px;
+  stroke: none;
+  fill: black;
+}
+
 
 /* Symbol area */
-text.symbol {
+/*text.symbol {
   font-size: 14px;
   font-family: monospace;
-}
+}*/
 
 .symbol rect {
   fill: lightgray;
@@ -48,7 +62,7 @@ text.symbol {
   fill: yellow
 }
 
-.symbol text {
+.symbol {
   stroke: forestgreen;
   fill: forestgreen;
   font-size: 20px;
@@ -144,8 +158,8 @@ rect.icon-bg.selected {
 }
 
 /* Change indicator */
-text.pos {
-  fill: lightgreen;
+.pos {
+  fill: forestgreen;
 }
 
 text.neg {
