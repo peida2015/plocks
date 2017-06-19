@@ -7,10 +7,11 @@ import ApiUtils from '../../ApiUtils/ApiUtils';
 import StockActions from '../../actions/StockActions';
 import SVG from './SVGContainer';
 import Timeline from './Timeline';
-import { Button, Navbar, InputGroup, Grid, Row, Col } from 'react-bootstrap';
+import { Button, Navbar, InputGroup, Grid, Row, Col, Glyphicon } from 'react-bootstrap';
 import * as d3 from 'd3';
 import lgIcon from '../../../public/lg-icon.png';
 import csIcon from '../../../public/cs-icon.png';
+import { svgString2Image, getSVGString } from '../../Utils/ExportImg';
 
 class Stock extends Component {
   static getStores() {
@@ -176,7 +177,7 @@ class Stock extends Component {
       </Timeline>): "";
 
       return (
-        <Col xs={12} smOffset={1} sm={8} md={8}
+        <Col xs={12}  md={8}
           id="dateRangeSelector"
           key="dateRangeSelector">
           <Navbar.Collapse>
@@ -191,15 +192,37 @@ class Stock extends Component {
     let candlestickActive = this.state.chartType === "candlestick";
     let dateSelector = this.buildDateRangeSelector();
 
-    let toggleButton = (<Col xs={2} xsOffset={1} sm={0}>
+    let boardButton = (<Col xs={4} md={10}
+                  className="footer-vertical-align">
+              <Button onClick={ this.backToMain }>
+                Board
+              </Button>
+          </Col>)
+
+    let toggleButton = (<Col xs={2} xsOffset={5}
+                     smHidden>
               <Navbar.Toggle />
             </Col>)
 
+    let boardToggleWrapper = (<Col xs={8} md={2}>
+        <Grid>
+          <Row>
+            { boardButton }
+            { toggleButton }
+          </Row>
+        </Grid>
+      </Col>)
+
     let chartTypeSelector = (
-      <Col xs={1} xsOffset={1} className="footer-vertical-align"
+      <Col xs={1} className="footer-vertical-align"
             id="chartTypeSelector"
             key="chartTypeSelector">
             <InputGroup>
+              <Button onClick={ this.exportImage }>
+                <Glyphicon glyph="download-alt" />
+                <a id="dlLink" style={ { display: "none"} }></a>
+              </Button>
+              {" "}
               <InputGroup.Button>
                 <Button active={ !candlestickActive }
                   onClick={ this.setLG }
@@ -220,16 +243,9 @@ class Stock extends Component {
         </Col>
     )
 
-    let dashboardButton = (<Col xs={2} md={1} className="footer-vertical-align">
-      <Button onClick={ this.backToMain }>
-        Dashboard
-      </Button>
-    </Col>)
-
     return (<Grid>
       <Row>
-        { dashboardButton }
-        { toggleButton }
+        { boardToggleWrapper }
         { window.innerWidth > 770 ? [dateSelector, chartTypeSelector] :
           [chartTypeSelector, dateSelector] }
       </Row>
@@ -268,11 +284,24 @@ class Stock extends Component {
     }
   }
 
+  exportImage() {
+    let svg = document.getElementsByTagName('svg')[0];
+    let svgString = getSVGString(svg);
+
+    let handleImageBlob = (blob, filesize)=> {
+      let dlLink = document.getElementById('dlLink');
+
+      dlLink.href = window.URL.createObjectURL(blob);
+      dlLink.click();
+    };
+
+    svgString2Image(svgString, svg.width.baseVal.value,
+                  svg.height.baseVal.value, 'png', handleImageBlob);
+  }
+
   render () {
     let stockChart = this.buildChart();
     let footerContents = this.buildFooter();
-
-    let dateSelector = this.buildDateRangeSelector();
 
     return (
       <div>
@@ -287,6 +316,7 @@ class Stock extends Component {
               { footerContents }
 
           </Navbar>
+          <canvas style={ {display: "none"} }></canvas>
       </div>);
   }
 }
