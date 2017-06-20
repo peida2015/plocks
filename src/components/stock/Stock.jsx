@@ -177,7 +177,7 @@ class Stock extends Component {
       </Timeline>): "";
 
       return (
-        <Col xs={12}  md={8}
+        <Col xs={12} sm={8}
           id="dateRangeSelector"
           key="dateRangeSelector">
           <Navbar.Collapse>
@@ -192,19 +192,21 @@ class Stock extends Component {
     let candlestickActive = this.state.chartType === "candlestick";
     let dateSelector = this.buildDateRangeSelector();
 
-    let boardButton = (<Col xs={4} md={10}
-                  className="footer-vertical-align">
+    let boardButton = (<Col xs={6} md={10}
+                  className="footer-vertical-align"
+                  style={ { paddingLeft: "0px"}}>
               <Button onClick={ this.backToMain }>
                 Board
               </Button>
           </Col>)
 
-    let toggleButton = (<Col xs={2} xsOffset={5}
+    let toggleButton = (<Col xs={2}
+                      xsPush={5}
                      smHidden>
               <Navbar.Toggle />
             </Col>)
 
-    let boardToggleWrapper = (<Col xs={8} md={2}>
+    let boardToggleWrapper = (<Col xs={7} sm={2}>
         <Grid>
           <Row>
             { boardButton }
@@ -246,7 +248,7 @@ class Stock extends Component {
     return (<Grid>
       <Row>
         { boardToggleWrapper }
-        { window.innerWidth > 770 ? [dateSelector, chartTypeSelector] :
+        { window.innerWidth >= 768 ? [dateSelector, chartTypeSelector] :
           [chartTypeSelector, dateSelector] }
       </Row>
     </Grid>);
