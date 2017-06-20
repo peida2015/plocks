@@ -107,15 +107,16 @@ text.symbol:hover {
 
 
 /* Candlestick chart */
-line.sticks {
+.sticks {
   stroke: black;
 }
 
-rect.gain {
+.gain {
   stroke: black;
   fill: lightgreen;
 }
-rect.loss {
+
+.loss {
   stroke: black;
   fill: red;
 }
