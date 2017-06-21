@@ -132,7 +132,7 @@ class StockMain extends Component {
           <Col lg={6}
             key={ symbol }
             className="ridge-border"
-            style={ { minHeight: 300 } }
+            style={ { minHeight: 350 } }
             id="chartBox">
             <Link to={ `/stock/${symbol}` }>
               <SVG stockData={ individualStockData.toArray() }
@@ -154,7 +154,7 @@ class StockMain extends Component {
       return (<Col lg={6}
             key={ symbol }
             className="ridge-border"
-            style={ { minHeight: 300 } }
+            style={ { minHeight: 350 } }
             id="chartBox">
             <Link to={ `/stock/${symbol}` }>
               <ContainedModal symbol={ symbol } />

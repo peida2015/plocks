@@ -10,26 +10,48 @@ class ContainedModal extends Component {
   }
 
   render() {
+    debugger
+    var modalBody;
+    if (window.location.pathname === "/stocks") {
+      modalBody = (
+        <Modal.Body>
+          <h4 style={{ textAlign: "center" }}>{ `Loading data for ${ this.props.symbol } ...` }</h4>
+          <div className="spinner-wrapper">
+            <div className="spinner">
+              <div className="rect2 spinner-rect-margin" />
+              <div className="rect3 spinner-rect-margin" />
+              <div className="rect4 spinner-rect-margin" />
+              <div className="rect5 spinner-rect-margin" />
+            </div>
+          </div>
+        </Modal.Body>
+      )
+    } else {
+      modalBody = (
+        <Modal.Body>
+          <h4 style={{ textAlign: "center" }}>{ `Loading data for ${ this.props.symbol } ...` }</h4>
+          <Jumbotron>
+            <div className="spinner-wrapper">
+              <div className="spinner">
+                <div className="rect2 spinner-rect-margin" />
+                <div className="rect3 spinner-rect-margin" />
+                <div className="rect4 spinner-rect-margin" />
+                <div className="rect5 spinner-rect-margin" />
+              </div>
+            </div>
+          </Jumbotron>
+        </Modal.Body>
+      )
+    }
+
     return (
       <div className="modal-container">
         <Modal show={ true }
+          bsSize="sm"
           container={this}
-          onEnter={ this.expandHeight }>
-          <Modal.Body>
-            <Modal.Header>
-              <h4>{ `Loading data for ${ this.props.symbol }, please wait ...` }</h4>
-            </Modal.Header>
-            <Jumbotron>
-              <div className="spinner-wrapper">
-                <div className="spinner">
-                  <div className="rect2 spinner-rect-margin" />
-                  <div className="rect3 spinner-rect-margin" />
-                  <div className="rect4 spinner-rect-margin" />
-                  <div className="rect5 spinner-rect-margin" />
-                </div>
-              </div>
-            </Jumbotron>
-          </Modal.Body>
+          onEnter={ this.expandHeight }
+          >
+          { modalBody }
         </Modal>
       </div>
     )
