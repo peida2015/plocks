@@ -5,6 +5,8 @@
 
 .modal-container .modal, .modal-container .modal-backdrop {
   position: absolute;
+  /* prevent contained modal from dominating other elements */
+  z-index: 10;
 }
 
 

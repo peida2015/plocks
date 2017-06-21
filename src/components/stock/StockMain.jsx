@@ -5,6 +5,7 @@ import { browserHistory, Link } from 'react-router';
 import { Container } from 'flux/utils';
 import ApiUtils from '../../ApiUtils/ApiUtils';
 import SVG from './SVGContainer';
+import ContainedModal from './ContainedModal';
 import { FormControl, FormGroup, Button, InputGroup,
           Glyphicon, Grid, Row, Col, Navbar } from 'react-bootstrap';
 
@@ -24,11 +25,17 @@ class StockMain extends Component {
     super(props);
 
     this.resizeListener = this.resizeListener.bind(this);
-    this.buildCharts.bind(this);
-    this.buildAddPanel.bind(this);
+    this.buildCharts = this.buildCharts.bind(this);
+    this.buildQueuedBox = this.buildQueuedBox.bind(this);
+    this.buildAddPanel = this.buildAddPanel.bind(this);
 
     // Default height and width
-    this.state = { width: 500, height: 400, tickerBelt: "Loading ticker info..." }
+    this.state = {
+      width: 500,
+      height: 400,
+      tickerBelt: "Loading GOOG ticker info...If you're new, try AMZN, TSLA, MSFT or KO",
+      queued: ["GOOG"]
+    }
   }
 
   componentWillMount() {
@@ -48,6 +55,13 @@ class StockMain extends Component {
       browserHistory.push('/welcome');
     } else if (nextState.rawData.size > 0) {
       this.updateTickerBelt.call(this, nextState.rawData.toObject());
+
+      let newQueued = this.state.queued.filter((symbol)=>{
+        return !nextState.rawData.get(symbol);
+      })
+
+      if (newQueued.length !== this.state.queued.length)
+            this.setState({ queued: newQueued });
     }
   }
 
@@ -59,55 +73,11 @@ class StockMain extends Component {
     window.addEventListener('resize', this.resizeListener);
 
     this.resizeListener();
-    // Start ticker belt
-    // this.startTickerBeltAnimation.apply(this);
   }
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.resizeListener);
   }
-
-  // startTickerBeltAnimation() {
-  //   // Start rolling text animation
-  //   var rollingHeader = document.getElementById('rolling');
-  //   var rollingText = document.getElementById('rolling-text');
-  //   var prevTextLength = rollingText.textContent.length;
-  //   var textWidth, offsetLeft, windowWidth, totalMoveLength;
-  //   offsetLeft = rollingText.offsetParent.offsetLeft;
-  //   var timeToComplete = 30 * 1000;
-  //
-  //   var start = null;
-  //   var lastUpdated = null;
-  //
-  //   var step = (timestamp)=>{
-  //     if (!start)  {
-  //       start = timestamp;
-  //       lastUpdated = timestamp;
-  //     }
-  //     var progress = timestamp - start;
-  //
-  //     if (timestamp-lastUpdated > 50 && this.state.tickerBelt.length !== 0) {
-  //       lastUpdated = timestamp;
-  //       if (progress > timeToComplete ||
-  //           prevTextLength !== this.state.tickerBelt.length) {
-  //         // Reset after completion
-  //         rollingText.textContent = this.state.tickerBelt;
-  //         textWidth = rollingText.scrollWidth;
-  //         windowWidth = window.innerWidth;
-  //         totalMoveLength = windowWidth + textWidth;
-  //
-  //         start = timestamp;
-  //         rollingHeader.style.transform = `translate3d(${ totalMoveLength - textWidth - offsetLeft }px, 0, 0)`;
-  //         prevTextLength = this.state.tickerBelt.length;
-  //       } else {
-  //         rollingHeader.style.transform = `translate3d(${ totalMoveLength * (1 - progress/timeToComplete) - offsetLeft - textWidth }px, 0, 0)`;
-  //       }
-  //     }
-  //     window.requestAnimationFrame(step);
-  //   };
-  //
-  //   window.requestAnimationFrame(step);
-  // }
 
   resizeListener() {
     if (document.getElementById('chartBox')) {
@@ -139,8 +109,14 @@ class StockMain extends Component {
 
   handleAdd(evt, inputBox) {
     evt.preventDefault();
-    let entered = evt.target.firstChild.firstChild.firstChild.value;
-    if (entered.length > 0) ApiUtils.fetchStockPrices(entered.toUpperCase());
+    let entered = evt.target.firstChild.firstChild.firstChild.value.toUpperCase();
+    if (entered.length > 0) {
+      this.setState({
+        queued: this.state.queued.concat(entered)
+      });
+
+      ApiUtils.fetchStockPrices(entered);
+    }
   };
 
   buildCharts(stockData) {
@@ -156,6 +132,7 @@ class StockMain extends Component {
           <Col lg={6}
             key={ symbol }
             className="ridge-border"
+            style={ { minHeight: 300 } }
             id="chartBox">
             <Link to={ `/stock/${symbol}` }>
               <SVG stockData={ individualStockData.toArray() }
@@ -172,11 +149,25 @@ class StockMain extends Component {
     return stockCharts;
   }
 
+  buildQueuedBox() {
+    return this.state.queued.map((symbol)=> {
+      return (<Col lg={6}
+            key={ symbol }
+            className="ridge-border"
+            style={ { minHeight: 300 } }
+            id="chartBox">
+            <Link to={ `/stock/${symbol}` }>
+              <ContainedModal symbol={ symbol } />
+            </Link>
+          </Col>);
+    })
+  }
+
   buildAddPanel() {
       let addPanel = (
           <Row>
             <Col lg={ 6 } lgOffset={ 3 } className="footer-vertical-align">
-              <form onSubmit={ this.handleAdd }>
+              <form onSubmit={ this.handleAdd.bind(this) }>
                 <FormGroup>
                   <InputGroup>
                     <FormControl placeholder="Type Stock Symbol" type="text"/>
@@ -213,6 +204,9 @@ class StockMain extends Component {
 
     let stockCharts = this.buildCharts(stockData);
     let addPanel = this.buildAddPanel();
+    let queuedStock = this.buildQueuedBox();
+
+    stockCharts = stockCharts.concat(queuedStock);
 
     if (stockCharts.length > 1) {
       stockCharts = this.wrapInRows(stockCharts);
@@ -224,7 +218,8 @@ class StockMain extends Component {
           { stockCharts }
         </Grid>
         <div id="footer-margin"></div>
-        <Navbar fixedBottom={ true } id="footer" fluid={ true }>
+        <Navbar fixedBottom={ true } id="footer" fluid={ true }
+                style={{ zIndex: 20 }}>
             { addPanel }
             <Navbar.Header id="rolling">
               <code id="rolling-text">

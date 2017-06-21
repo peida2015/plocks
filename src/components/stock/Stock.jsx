@@ -322,7 +322,8 @@ class Stock extends Component {
           </div>
           <Navbar fixedBottom
                   fluid={ true }
-                  onToggle={ this.navbarToggleHandler } >
+                  onToggle={ this.navbarToggleHandler }
+                  style={{ zIndex: 20 }}>
               { footerContents }
 
           </Navbar>
