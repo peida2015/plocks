@@ -10,35 +10,37 @@ class ContainedModal extends Component {
   }
 
   render() {
-    debugger
     var modalBody;
+    let modalTitle = (
+      <h4 style={{ textAlign: "center" }}>
+        { `Loading data for ${ this.props.symbol } ...` }
+      </h4>
+    );
+
+    let spinner = (
+      <div className="spinner-wrapper">
+        <div className="spinner">
+          <div className="rect2 spinner-rect-margin" />
+          <div className="rect3 spinner-rect-margin" />
+          <div className="rect4 spinner-rect-margin" />
+          <div className="rect5 spinner-rect-margin" />
+        </div>
+      </div>
+    )
+
     if (window.location.pathname === "/stocks") {
       modalBody = (
         <Modal.Body>
-          <h4 style={{ textAlign: "center" }}>{ `Loading data for ${ this.props.symbol } ...` }</h4>
-          <div className="spinner-wrapper">
-            <div className="spinner">
-              <div className="rect2 spinner-rect-margin" />
-              <div className="rect3 spinner-rect-margin" />
-              <div className="rect4 spinner-rect-margin" />
-              <div className="rect5 spinner-rect-margin" />
-            </div>
-          </div>
+          { modalTitle }
+          { spinner }
         </Modal.Body>
       )
     } else {
       modalBody = (
         <Modal.Body>
-          <h4 style={{ textAlign: "center" }}>{ `Loading data for ${ this.props.symbol } ...` }</h4>
+          { modalTitle }
           <Jumbotron>
-            <div className="spinner-wrapper">
-              <div className="spinner">
-                <div className="rect2 spinner-rect-margin" />
-                <div className="rect3 spinner-rect-margin" />
-                <div className="rect4 spinner-rect-margin" />
-                <div className="rect5 spinner-rect-margin" />
-              </div>
-            </div>
+            { spinner }
           </Jumbotron>
         </Modal.Body>
       )
@@ -49,8 +51,7 @@ class ContainedModal extends Component {
         <Modal show={ true }
           bsSize="sm"
           container={this}
-          onEnter={ this.expandHeight }
-          >
+          onEnter={ this.expandHeight }>
           { modalBody }
         </Modal>
       </div>
