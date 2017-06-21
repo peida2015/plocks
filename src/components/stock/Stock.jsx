@@ -63,7 +63,10 @@ class Stock extends Component {
     let symbol = this.props.params.stock.toUpperCase();
     if (nextState.currentUser.size === 0 ||
           nextState.currentUser.get('currentUser') === null) {
-      window.localStorage.setItem("__REDIRECTED_FROM_STOCK", symbol);
+      // Only store redirect when there is not any currentUser, not when the user is signing out
+      if (!this.state.currentUser) {
+        window.localStorage.setItem("__REDIRECTED_FROM_STOCK", symbol);
+      }
       browserHistory.push('/welcome');
     } else {
       // Forget redirect route
@@ -112,7 +115,7 @@ class Stock extends Component {
   buildChart() {
     var symbol = this.props.params.stock.toUpperCase();
     var cardContent;
-    
+
     if (this.state.rawData.get(symbol)) {
       let stockData = this.state.rawData.get(symbol).get('filtered') ?
       this.state.rawData.get(symbol).get('filtered') :
