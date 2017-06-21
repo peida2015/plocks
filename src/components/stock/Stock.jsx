@@ -7,6 +7,7 @@ import ApiUtils from '../../ApiUtils/ApiUtils';
 import StockActions from '../../actions/StockActions';
 import SVG from './SVGContainer';
 import Timeline from './Timeline';
+import ContainedModal from './ContainedModal';
 import { Button, Navbar, InputGroup, Grid, Row, Col, Glyphicon } from 'react-bootstrap';
 import * as d3 from 'd3';
 import lgIcon from '../../../public/lg-icon.png';
@@ -110,24 +111,28 @@ class Stock extends Component {
 
   buildChart() {
     var symbol = this.props.params.stock.toUpperCase();
+    var cardContent;
+    
     if (this.state.rawData.get(symbol)) {
       let stockData = this.state.rawData.get(symbol).get('filtered') ?
       this.state.rawData.get(symbol).get('filtered') :
       this.state.rawData.get(symbol).get('original');
 
-      let chart = (
-        <div key={ symbol }
-          className="twelve column ridge-border full-height"
-          id="chartBox">
+      cardContent = (
           <SVG stockData={ stockData.toArray() }
             width={ this.state.width }
             height={ this.state.height }
-            chartType={ this.state.chartType }/>
-        </div>);
-        return chart;
+            chartType={ this.state.chartType }/>)
     } else {
-      return "";
+      cardContent = (<ContainedModal symbol={ symbol }/>)
     }
+
+    return (
+      <div key={ symbol }
+          className="ridge-border full-height"
+          id="chartBox">
+          { cardContent }
+      </div>);
   }
 
   setLG() {
