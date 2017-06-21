@@ -48,11 +48,11 @@ class Linegraph extends Component {
       layOverLines = (
         <g>
           <line className="horizontal-layover"
-            x2={ xRange[xRange.length-1] }
+            x2={ xRange[xRange.length-1] - 40 }
             y1={ this.state.pos.y }
             y2={ this.state.pos.y }
             stroke="black"/>
-          <text className="layover" dx={ xRange[xRange.length-1] }
+          <text className="layover" dx={ xRange[xRange.length-1] - 40 }
                 dy={ this.state.pos.y }>
                 { `${twoSigFig(data.open)}` }
             </text>

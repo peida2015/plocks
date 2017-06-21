@@ -85,7 +85,11 @@ class Axes extends Component {
     let yScale = this.props.yScale;
     // Generate ticks on y-axis.
     let tall = this.props.height > 430;
-    let yTicks = yScale.ticks(tall ? 10 : 4).map((tick)=>{
+    let uptoFourSigFig = d3.format('.4');
+
+    let yTicks = yScale.ticks(tall ? 10 : 4);
+
+    yTicks = yTicks.map((tick)=>{
     return (
       <g className='tick'
           key={ tick.toString() }
@@ -96,7 +100,9 @@ class Axes extends Component {
           <text
             x={ this.props.xMargin <= 10 ? "10" : "-30"  }
             y="0"
-            style={{ fontSize: this.fontSize }}>{ tick }</text>
+            style={{ fontSize: this.fontSize }}>{
+              uptoFourSigFig(tick)
+            }</text>
       </g>)
     })
 
