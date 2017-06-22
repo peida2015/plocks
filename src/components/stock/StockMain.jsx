@@ -9,6 +9,8 @@ import ContainedModal from './ContainedModal';
 import { FormControl, FormGroup, Button, InputGroup,
           Glyphicon, Grid, Row, Col, Navbar } from 'react-bootstrap';
 
+import { Set } from 'immutable';
+
 class StockMain extends Component {
   static getStores() {
     return [CurrentUserStore, StockStore]
@@ -34,7 +36,8 @@ class StockMain extends Component {
       width: 500,
       height: 400,
       tickerBelt: "Loading GOOG ticker info...If you're new, try AMZN, TSLA, MSFT or KO",
-      queued: ["GOOG"]
+      queued: Set(),
+      loading: Set()
     }
   }
 
@@ -42,10 +45,15 @@ class StockMain extends Component {
     // Check authentication or preload data;
     if (this.state.currentUser.size === 0 || this.state.currentUser.get('currentUser') === null) {
       browserHistory.push('/welcome');
-    } else if (this.state.rawData.size === 0) {
-      ApiUtils.fetchStockPrices("GOOG");
-    } else {
+    } else if (this.state.rawData.size > 0) {
+      // If something is in the StockStore already, update tickerBelt info
       this.updateTickerBelt.call(this, this.state.rawData.toObject());
+    } else {
+      // If nothing is loading or in store, request GOOG as backup
+      ApiUtils.fetchStockPrices("GOOG");
+      this.setState({
+        loading: this.state.loading.add("GOOG")
+      });
     }
 
   }
@@ -53,15 +61,25 @@ class StockMain extends Component {
   componentWillUpdate(nextProps, nextState) {
     if (nextState.currentUser.size === 0 || nextState.currentUser.get('currentUser') === null) {
       browserHistory.push('/welcome');
+    } else if (nextState.queued.size !== 0) {
+      // If there's something in the queue, made the request and move to loading
+      let requestItem = nextState.queued.last();
+      ApiUtils.fetchStockPrices(requestItem);
+
+      this.setState({
+        queued: nextState.queued.delete(requestItem),
+        loading: this.state.loading.add(requestItem)
+      });
     } else if (nextState.rawData.size > 0) {
       this.updateTickerBelt.call(this, nextState.rawData.toObject());
 
-      let newQueued = this.state.queued.filter((symbol)=>{
+      // Remove loading items if data is in StockStore already
+      let newQueued = this.state.loading.filter((symbol)=>{
         return !nextState.rawData.get(symbol);
       })
 
-      if (newQueued.length !== this.state.queued.length)
-            this.setState({ queued: newQueued });
+      if (!newQueued.equals(this.state.loading))
+            this.setState({ loading: newQueued });
     }
   }
 
@@ -91,6 +109,7 @@ class StockMain extends Component {
   }
 
   updateTickerBelt(stockData) {
+    // Updates ticker belt with loaded data in StockStore
     let tickerInfo = [];
     for (var symbol in stockData) {
       if (typeof symbol === "string") {
@@ -110,12 +129,13 @@ class StockMain extends Component {
   handleAdd(evt, inputBox) {
     evt.preventDefault();
     let entered = evt.target.firstChild.firstChild.firstChild.value.toUpperCase();
+
+    evt.target.firstChild.firstChild.firstChild.value = "";
+    
     if (entered.length > 0) {
       this.setState({
-        queued: this.state.queued.concat(entered)
+        queued: this.state.queued.add(entered)
       });
-
-      ApiUtils.fetchStockPrices(entered);
     }
   };
 
@@ -150,7 +170,7 @@ class StockMain extends Component {
   }
 
   buildQueuedBox() {
-    return this.state.queued.map((symbol)=> {
+    return this.state.loading.map((symbol)=> {
       return (<Col lg={6}
             key={ symbol }
             className="ridge-border"
