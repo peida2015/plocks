@@ -47,7 +47,7 @@ class Stock extends Component {
   }
 
   componentWillMount() {
-    let symbol = this.props.params.stock;
+    let symbol = this.props.params.stock.toUpperCase();
     let path = this.props.location.pathname;
 
     // Check authentication or preload data;
@@ -55,7 +55,11 @@ class Stock extends Component {
       window.localStorage.setItem("__REDIRECTED_FROM_STOCK", path);
       browserHistory.push('/welcome');
     } else if (this.state.rawData.size === 0 || this.state.rawData.get(symbol).size === 0) {
-      ApiUtils.fetchStockPrices(symbol);
+      this.state.currentUser.get('currentUser').getToken(true)
+        .then(function (idToken){
+          console.log(idToken);
+          ApiUtils.fetchStockPrices(symbol, idToken);
+        });
     }
   }
 
@@ -93,7 +97,7 @@ class Stock extends Component {
            this.state.timescale.range()[1] !== bluebox.clientWidth)) {
 
       let stockData = this.state.rawData
-              .get(this.props.params.stock).get('original');
+              .get(this.props.params.stock.toUpperCase()).get('original');
       let domain = [stockData.first().tradingDay,
                     stockData.last().tradingDay];
       let range = [0, bluebox.clientWidth];

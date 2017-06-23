@@ -50,10 +50,13 @@ class StockMain extends Component {
       this.updateTickerBelt.call(this, this.state.rawData.toObject());
     } else {
       // If nothing is loading or in store, request GOOG as backup
-      ApiUtils.fetchStockPrices("GOOG");
-      this.setState({
-        loading: this.state.loading.add("GOOG")
-      });
+      this.state.currentUser.get('currentUser').getToken(true)
+        .then(function (idToken){
+          ApiUtils.fetchStockPrices("GOOG", idToken);
+          this.setState({
+            loading: this.state.loading.add("GOOG")
+          });
+        }.bind(this));
     }
 
   }
@@ -63,13 +66,16 @@ class StockMain extends Component {
       browserHistory.push('/welcome');
     } else if (nextState.queued.size !== 0) {
       // If there's something in the queue, made the request and move to loading
-      let requestItem = nextState.queued.last();
-      ApiUtils.fetchStockPrices(requestItem);
+      this.state.currentUser.get('currentUser').getToken(true)
+        .then(function (idToken){
+          let requestItem = nextState.queued.last();
+          ApiUtils.fetchStockPrices(requestItem, idToken);
 
-      this.setState({
-        queued: nextState.queued.delete(requestItem),
-        loading: this.state.loading.add(requestItem)
-      });
+          this.setState({
+            queued: nextState.queued.delete(requestItem),
+            loading: this.state.loading.add(requestItem)
+          });
+        }.bind(this));
     } else if (nextState.rawData.size > 0) {
       this.updateTickerBelt.call(this, nextState.rawData.toObject());
 
@@ -131,7 +137,7 @@ class StockMain extends Component {
     let entered = evt.target.firstChild.firstChild.firstChild.value.toUpperCase();
 
     evt.target.firstChild.firstChild.firstChild.value = "";
-    
+
     if (entered.length > 0) {
       this.setState({
         queued: this.state.queued.add(entered)
