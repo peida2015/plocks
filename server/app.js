@@ -18,6 +18,8 @@ admin.initializeApp({
   databaseURL: "https://voltaic-tooling-115723.firebaseio.com"
 });
 
+const db = admin.database();
+
 app.use(bodyParser.json());
 
 var verifyIdToken = (req, res, next)=> {
@@ -48,53 +50,92 @@ var verifyIdToken = (req, res, next)=> {
 app.use('/stockdata/:stock', verifyIdToken);
 
 app.post('/stockdata/:stock', function (req, res) {
-  var reqData = {
-        key: process.env.barchart_api_key, //ENV["barchart_api_key"],
-        symbol: "GOOG", //data["symbol"],
-        type: "daily", //data["type"],
-        startDate: "20150308"
-  };
+  var symbol = req.params.stock;
+  var ref = db.ref('/stockdata/'+symbol);
 
-  reqData.symbol = req.params.stock;
+  function reqBarchartData() {
+    var reqData = {
+      key: process.env.barchart_api_key, //ENV["barchart_api_key"],
+      symbol: "GOOG",
+      type: "daily",
+      startDate: "20150308"
+    };
 
-  var options = {
-    hostname: "marketdata.websol.barchart.com",
-    path: "/getHistory.json?"+qstring.stringify(reqData),
-    headers: {
-      "Content-type": 'application/x-www-form-urlencoded'
-    },
-    method: "GET"
-  }
+    reqData.symbol = symbol;
 
-  http.get(options, (response)=> {
-    var rawData = [];
+    var options = {
+      hostname: "marketdata.websol.barchart.com",
+      path: "/getHistory.json?"+qstring.stringify(reqData),
+      headers: {
+        "Content-type": 'application/x-www-form-urlencoded'
+      },
+      method: "GET"
+    }
 
-    console.log("got something");
+    http.get(options, (response)=> {
+      var rawData = [];
 
-    // Handle error
-    response.on("error", (err)=>{
+      console.log("got something");
+
+      // Handle error
+      response.on("error", (err)=>{
+        res.statusCode = 500;
+        res.end();
+      });
+
+      // Aggregate data
+      response.on('data', (chunk) => {
+        rawData.push(chunk);
+      });
+
+      // pass on data when done
+      response.on('end', ()=> {
+        console.log("end");
+        var data = Buffer.concat(rawData).toString();
+        var response = JSON.parse(data);
+
+        if (response.status.code === 200) {
+          ref.set({
+            timestamp: Date.now(),
+            data: data
+          });
+          res.type('.json');
+          res.send(data);
+        } else if (snapshot.val()){
+          // return old data if fresh data request is not successful
+          res.type('.json');
+          res.send(snapshot.val().data);
+        } else {
+          // if no data is available, return 500
+          res.statusCode = 500;
+          res.end();
+        }
+      })
+    }).on("error", (err)=>{
       res.statusCode = 500;
       res.end();
     });
+  };
 
-    // Aggregate data
-    response.on('data', (chunk) => {
-      rawData.push(chunk);
-    });
 
-    // pass on data when done
-    response.on('end', ()=> {
-      console.log("end");
+  ref.once("value").then(function (snapshot){
+    var oneDay = 60 * 60 * 24 * 1000;
+    console.log(Date.now() - snapshot.val().timestamp);
 
-      res.type('.json');
-      res.send(Buffer.concat(rawData).toString());
-    });
-  }).on("error", (err)=>{
-    res.statusCode = 500;
-    res.end();
-  })
+    if (!snapshot.val() || Date.now() - snapshot.val().timestamp > oneDay) {
+      // if there's no fresh data in firebase db, request new and store
+      reqBarchartData();
+    } else {
+      console.log("sent from fb");
+      res.type(".json");
+      res.send(snapshot.val().data);
+    }
 
-})
+  }).catch(function (error) {
+    reqBarchartData();
+  });
+});
+
 
 app.use(express.static(path.resolve(__dirname, '..', 'build')));
 
