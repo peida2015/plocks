@@ -15,7 +15,7 @@ admin.initializeApp({
   credential: admin.credential.cert({
     projectId: process.env.firebase_project_id,
     clientEmail: process.env.firebase_client_email,
-    privateKey: process.env.firebase_key
+    privateKey: JSON.parse(process.env.firebase_key)
   }),
   databaseURL: "https://voltaic-tooling-115723.firebaseio.com"
 });
