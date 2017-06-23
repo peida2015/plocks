@@ -11,12 +11,10 @@ const app = express();
 
 const admin = require("firebase-admin");
 
-var serviceAccount = require("./voltaic-tooling-115723-firebase-adminsdk-mu326-440c12fb16.json");
-
 admin.initializeApp({
   credential: admin.credential.cert({
     projectId: process.env.firebase_project_id,
-    clientEmail: process.env.firebase_client_email "firebase-adminsdk-mu326@voltaic-tooling-115723.iam.gserviceaccount.com",
+    clientEmail: process.env.firebase_client_email,
     privateKey: process.env.firebase_key
   }),
   databaseURL: "https://voltaic-tooling-115723.firebaseio.com"
