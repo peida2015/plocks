@@ -57,7 +57,6 @@ class Stock extends Component {
     } else if (this.state.rawData.size === 0 || this.state.rawData.get(symbol).size === 0) {
       this.state.currentUser.get('currentUser').getToken(true)
         .then(function (idToken){
-          console.log(idToken);
           ApiUtils.fetchStockPrices(symbol, idToken);
         });
     }
@@ -286,7 +285,8 @@ class Stock extends Component {
 
   navbarToggleHandler(navExpanded) {
     if (navExpanded) {
-      let length = document.getElementById('dateRangeSelector').clientWidth;
+      // Cannot detect .bluebox width before it's rendered.  Get the containing box minus 62 (2 * handles width + 2 * border width)  
+      let length = document.getElementById('dateRangeSelector').clientWidth-62;
       let stockData = this.state.rawData
               .get(this.props.params.stock).get('original');
       let domain = [stockData.first().tradingDay,
