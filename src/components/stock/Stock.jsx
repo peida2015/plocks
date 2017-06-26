@@ -109,6 +109,8 @@ class Stock extends Component {
   componentDidMount() {
     this.resizeListener();
     window.addEventListener('resize', this.resizeListener);
+    let title = document.getElementsByTagName('title')[0];
+    title.textContent = this.props.params.stock.toUpperCase();
   }
 
   componentWillUnmount() {
@@ -285,7 +287,7 @@ class Stock extends Component {
 
   navbarToggleHandler(navExpanded) {
     if (navExpanded) {
-      // Cannot detect .bluebox width before it's rendered.  Get the containing box minus 62 (2 * handles width + 2 * border width)  
+      // Cannot detect .bluebox width before it's rendered.  Get the containing box minus 62 (2 * handles width + 2 * border width)
       let length = document.getElementById('dateRangeSelector').clientWidth-62;
       let stockData = this.state.rawData
               .get(this.props.params.stock).get('original');

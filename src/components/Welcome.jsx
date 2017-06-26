@@ -27,6 +27,9 @@ class Welcome extends Component {
   }
 
   componentDidMount() {
+    let title = document.getElementsByTagName('title')[0];
+    title.textContent = "Welcome to Plocks";
+
     if (this.state.currentUser.size === 0 || this.state.currentUser.get('currentUser') === null) {
       var uiConfig = {
         callbacks: {

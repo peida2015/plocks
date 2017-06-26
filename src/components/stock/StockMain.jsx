@@ -97,6 +97,9 @@ class StockMain extends Component {
     window.addEventListener('resize', this.resizeListener);
 
     this.resizeListener();
+
+    let title = document.getElementsByTagName('title')[0];
+    title.textContent = "Discovery Board";
   }
 
   componentWillUnmount() {
