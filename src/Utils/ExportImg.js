@@ -58,8 +58,11 @@ function getSVGString( svgNode ) {
 
 		return extractedCSSText;
 
-		function contains(str,arr) {
-			return arr.indexOf( str ) === -1 ? false : true;
+		function contains(str, arr) {
+			return arr.some((ruleStr)=>{
+				if (!str) return false;
+				return str.indexOf( ruleStr ) === -1 ? false : true;
+			})
 		}
 
 	}
