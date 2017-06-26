@@ -11,14 +11,24 @@ const app = express();
 
 const admin = require("firebase-admin");
 
-admin.initializeApp({
-  credential: admin.credential.cert({
-    projectId: process.env.firebase_project_id,
-    clientEmail: process.env.firebase_client_email,
-    privateKey: JSON.parse(process.env.firebase_key)
-  }),
-  databaseURL: "https://voltaic-tooling-115723.firebaseio.com"
-});
+// initialization for both local and heroku deployment
+try {
+  var serviceAccount = require("./voltaic-tooling-115723-firebase-adminsdk-mu326-440c12fb16.json");
+
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    databaseURL: "https://voltaic-tooling-115723.firebaseio.com"
+  });
+} catch(err) {
+  admin.initializeApp({
+    credential: admin.credential.cert({
+      projectId: process.env.firebase_project_id,
+      clientEmail: process.env.firebase_client_email,
+      privateKey: JSON.parse(process.env.firebase_key)
+    }),
+    databaseURL: "https://voltaic-tooling-115723.firebaseio.com"
+  });
+}
 
 const db = admin.database();
 
@@ -49,6 +59,14 @@ var verifyIdToken = (req, res, next)=> {
 
 }
 
+// Enable CORS headers
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
+
 app.use('/stockdata/:stock', verifyIdToken);
 
 app.post('/stockdata/:stock', function (req, res) {
@@ -77,8 +95,6 @@ app.post('/stockdata/:stock', function (req, res) {
     http.get(options, (response)=> {
       var rawData = [];
 
-      console.log("got something");
-
       // Handle error
       response.on("error", (err)=>{
         res.statusCode = 500;
@@ -92,7 +108,6 @@ app.post('/stockdata/:stock', function (req, res) {
 
       // pass on data when done
       response.on('end', ()=> {
-        console.log("end");
         var data = Buffer.concat(rawData).toString();
         var response = JSON.parse(data);
 
@@ -122,7 +137,6 @@ app.post('/stockdata/:stock', function (req, res) {
 
   ref.once("value").then(function (snapshot){
     var oneDay = 60 * 60 * 24 * 1000;
-    console.log(Date.now() - snapshot.val().timestamp);
 
     if (!snapshot.val() || Date.now() - snapshot.val().timestamp > oneDay) {
       // if there's no fresh data in firebase db, request new and store
