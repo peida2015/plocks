@@ -35,7 +35,7 @@ class Navbar extends Component {
 
   render() {
     let user = this.state.currentUser.get('currentUser');
-    let showName = user ? (
+    let showName = user && user.displayName ? (
       <RBNavbar.Text pullRight>
         {"Hi, "+ user.displayName}
       </RBNavbar.Text>) : "";

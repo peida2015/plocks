@@ -38,6 +38,7 @@ class Welcome extends Component {
           }
         },
         signInFlow: 'popup',
+        signInSuccessUrl: window.location.toString(),
         signInOptions: [
           // Leave the lines as is for the providers you want to offer your users.
           this.state.firebase.get("auth").GoogleAuthProvider.PROVIDER_ID,
@@ -70,8 +71,15 @@ class Welcome extends Component {
     }
   }
 
+  signIn() {
+    this.state.firebase.get("auth")().signInAnonymously();
+    setTimeout(()=>{
+      this.signOut.apply(this);
+    }, 1000*60*5);
+  }
+
   signOut() {
-    this.state.firebase.get("auth").signOut();
+    this.state.firebase.get("auth")().signOut();
   };
 
   componentWillUnmount() {
@@ -103,12 +111,12 @@ class Welcome extends Component {
                   <h1 className="text-primary text-center top-margin title-font">We Plot Your Stocks</h1>
 
                   <div className="top-margin">
-                    <div className="centered-block" id="g-signin2"></div>
                     <div id="firebaseui-auth-container"></div>
                   </div>
                   <div className="top-margin">
                     <div className="centered-block">
-                        <div className="demo trial-text container" onClick={this.props.signOut}>
+                      <div className="demo trial-text container"
+                        onClick={ this.signIn.bind(this) }>
                         <div className="centered-block">
                           Try It for 5 Minutes
                         </div>
