@@ -48,7 +48,6 @@ var verifyIdToken = (req, res, next)=> {
   } else {
     admin.auth().verifyIdToken(token)
     .then(function (decodedToken) {
-      console.log(decodedToken.uid);
       next()
     })
     .catch(function (error) {
