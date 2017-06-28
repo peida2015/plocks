@@ -43,6 +43,12 @@ class Plocks extends Component {
 
   }
 
+  componentDidMount() {
+    let navbar = document.getElementsByClassName('navbar')[0];
+    let headerMargin = document.getElementsByClassName('header-margin')[0];
+    headerMargin.style.height = navbar.clientHeight+"px";
+  }
+
   componentWillUnmount() {
     this.state.firebase.ui.reset();
   }

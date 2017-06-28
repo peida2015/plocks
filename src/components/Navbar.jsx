@@ -3,8 +3,7 @@ import logo from '../../public/logo2.png';
 import { Container } from 'flux/utils';
 import CurrentUserStore from '../stores/CurrentUserStore';
 import FirebaseStore from '../stores/FirebaseStore';
-import { Navbar as RBNavbar }  from 'react-bootstrap';
-import { Button } from 'react-bootstrap';
+import { Navbar as RBNavbar, Button, Collapse }  from 'react-bootstrap';
 
 class Navbar extends Component {
   static getStores() {
@@ -21,6 +20,12 @@ class Navbar extends Component {
   constructor(props) {
     super(props);
     this.signOut = this.signOut.bind(this);
+    this.mousemoveHandler = this.mousemoveHandler.bind(this);
+
+    this.state = {
+      lastUpdated: null,
+      showNavbar: true
+    };
   }
 
   componentWillMount() {
@@ -31,6 +36,35 @@ class Navbar extends Component {
   }
 
   componentWillUpdate(nextProps, nextState) {
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (window.location.pathname.match('stock')) {
+      document.addEventListener('mousemove', this.mousemoveHandler);
+    }
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('mousemove', this.mousemoveHandler);
+  }
+
+  mousemoveHandler(evt) {
+    if (!this.state.lastUpdated) this.setState({ lastUpdated: Date.now() });
+    if (Date.now() - this.state.lastUpdated > 300) {
+      this.setState({ lastUpdated: Date.now() });
+      if (evt.clientY < 80) {
+        clearTimeout(this.collapseTimeout);
+        this.setState({
+          showNavbar: true
+        })
+      } else {
+        this.collapseTimeout = setTimeout(()=>{
+          this.setState({
+            showNavbar: false
+          });
+        }, 10000);
+      }
+    }
   }
 
   render() {
@@ -48,8 +82,10 @@ class Navbar extends Component {
         </RBNavbar.Form>) : "";
 
     return (
-      <div>
-          {/*<!-- navbar begins -->*/}
+      <Collapse transitionAppear={ true }
+                in={ this.state.showNavbar }
+                timeout={ 1000 }>
+                {/*<!-- navbar begins -->*/}
         <RBNavbar fixedTop={true} className="navBG">
             <RBNavbar.Header>
               <RBNavbar.Brand>
@@ -69,7 +105,7 @@ class Navbar extends Component {
             </RBNavbar.Collapse>
           {/*<!-- /.navbar-collapse -->*/}
         </RBNavbar>
-      </div>
+      </Collapse>
     )
   }
 }
