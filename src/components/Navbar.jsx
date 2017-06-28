@@ -28,24 +28,24 @@ class Navbar extends Component {
     };
   }
 
-  componentWillMount() {
-  }
-
-  signOut() {
-    this.state.firebase.get("auth")().signOut();
-  }
-
-  componentWillUpdate(nextProps, nextState) {
-  }
-
   componentDidUpdate(prevProps, prevState) {
     if (window.location.pathname.match('stock')) {
       document.addEventListener('mousemove', this.mousemoveHandler);
+    } else {
+      document.removeEventListener('mousemove', this.mousemoveHandler);
+      this.setState({ showNavbar: true });
     }
   }
 
   componentWillUnmount() {
     document.removeEventListener('mousemove', this.mousemoveHandler);
+  }
+
+  signOut() {
+    // Manually trigger navbar collapse
+    clearTimeout(this.collapseTimeout);
+    document.querySelector('button.navbar-toggle').click();
+    this.state.firebase.get("auth")().signOut();
   }
 
   mousemoveHandler(evt) {
@@ -54,15 +54,16 @@ class Navbar extends Component {
       this.setState({ lastUpdated: Date.now() });
       if (evt.clientY < 80) {
         clearTimeout(this.collapseTimeout);
+        this.collapseTimeout = null;
         this.setState({
           showNavbar: true
-        })
-      } else {
+        });
+      } else if (!this.collapseTimeout){
         this.collapseTimeout = setTimeout(()=>{
           this.setState({
             showNavbar: false
           });
-        }, 10000);
+        }, 8000);
       }
     }
   }

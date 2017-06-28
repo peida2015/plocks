@@ -125,7 +125,7 @@ class Welcome extends Component {
                   </div>
 
                   <h3 className="text-primary text-center top-margin">
-                    Please sign-in through Google before continuing.
+                    Try it for free.
                   </h3>
                 </div>
                 {/* <!-- Sign-in Buttons container END --> */ }
