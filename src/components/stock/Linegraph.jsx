@@ -21,9 +21,10 @@ class Linegraph extends Component {
 
   mouseOverListener(evt) {
     let clientRect = evt.target.getBoundingClientRect();
+    let xCoor = evt.clientX || evt.touches[0].clientX;
 
     var tradingDayData = this.props.stockData.find((item)=> {
-      return Math.abs(item.tradingDay - this.props.xScale.invert(evt.clientX - clientRect.left)) < 1000 * 60 * 60 *24;
+      return Math.abs(item.tradingDay - this.props.xScale.invert(xCoor - clientRect.left)) < 1000 * 60 * 60 *24;
     });
 
     if (tradingDayData) {
@@ -94,7 +95,8 @@ class Linegraph extends Component {
                 width={ xRange[xRange.length-1] }
                 height={ this.props.yScale.range()[0] }
                 fill="transparent"
-                onMouseMove={ this.mouseOverListener.bind(this) }/>
+                onMouseMove={ this.mouseOverListener.bind(this) }
+                onTouchMove={ this.mouseOverListener.bind(this) }/>
           { layOverLines }
       </g>)
   }
