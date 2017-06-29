@@ -8,10 +8,11 @@ import StockActions from '../../actions/StockActions';
 import SVG from './SVGContainer';
 import Timeline from './Timeline';
 import ContainedModal from './ContainedModal';
-import { Button, Navbar, InputGroup, Grid, Row, Col, Glyphicon, Nav, NavItem } from 'react-bootstrap';
+import { Button, Navbar, InputGroup, Grid, Row, Col, Glyphicon, Collapse, ButtonToolbar, OverlayTrigger, Popover } from 'react-bootstrap';
 import * as d3 from 'd3';
 import lgIcon from '../../../public/lg-icon.png';
 import csIcon from '../../../public/cs-icon.png';
+import sliderIcon from '../../../public/slider.png';
 import { svgString2Image, getSVGString } from '../../Utils/ExportImg';
 
 class Stock extends Component {
@@ -205,24 +206,43 @@ class Stock extends Component {
     let candlestickActive = this.state.chartType === "candlestick";
     let dateSelector = this.buildDateRangeSelector();
 
-    let boardButton = (<Col xs={6} md={10}
+    let toolIcons = (<Popover>
+        <ButtonToolbar>
+          <Button>B1</Button>
+          <Button>B2</Button>
+          <Button>B3</Button>
+          <Button>B1</Button>
+        </ButtonToolbar>
+    </Popover>)
+
+    let toolbarButton = (<Col xs={6} md={10}
                   className="footer-vertical-align"
                   style={ { paddingLeft: "0px"}}>
-              <Button onClick={ this.backToMain }>
-                Board
-              </Button>
-          </Col>)
+            <ButtonToolbar>
+              <OverlayTrigger placement="top"
+                    trigger="click"
+                    overlay={ toolIcons }>
+                <Button>
+                  <Glyphicon glyph="edit"/>
+                </Button>
+              </OverlayTrigger>
+            </ButtonToolbar>
+          </Col>);
+
+    let sliderButton = (<img src={ sliderIcon }
+                            width="25" role="presentation"/>);
 
     let toggleButton = (<Col xs={2}
                       xsPush={5}
                      smHidden>
-              <Navbar.Toggle />
+              <Navbar.Toggle children={ sliderButton }
+                      style={ { padding: "3px 6px" } }/>
             </Col>)
 
-    let boardToggleWrapper = (<Col xs={7} sm={2}>
+    let toolbarToggleWrapper = (<Col xs={7} sm={2}>
         <Grid>
           <Row>
-            { boardButton }
+            { toolbarButton }
             { toggleButton }
           </Row>
         </Grid>
@@ -260,7 +280,9 @@ class Stock extends Component {
 
     return (<Grid>
       <Row>
-        { window.innerWidth >= 768 ? [boardToggleWrapper, dateSelector] : [dateSelector, boardToggleWrapper] }
+        { window.innerWidth >= 768 ?
+          [toolbarToggleWrapper, dateSelector] :
+          [dateSelector, toolbarToggleWrapper] }
         { chartTypeSelector }
       </Row>
     </Grid>);
@@ -330,7 +352,6 @@ class Stock extends Component {
                   onToggle={ this.navbarToggleHandler }
                   style={{ zIndex: 20 }}>
               { footerContents }
-
           </Navbar>
           <canvas style={ {display: "none"} }></canvas>
       </div>);
