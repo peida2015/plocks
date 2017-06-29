@@ -8,7 +8,7 @@ import StockActions from '../../actions/StockActions';
 import SVG from './SVGContainer';
 import Timeline from './Timeline';
 import ContainedModal from './ContainedModal';
-import { Button, Navbar, InputGroup, Grid, Row, Col, Glyphicon } from 'react-bootstrap';
+import { Button, Navbar, InputGroup, Grid, Row, Col, Glyphicon, Nav, NavItem } from 'react-bootstrap';
 import * as d3 from 'd3';
 import lgIcon from '../../../public/lg-icon.png';
 import csIcon from '../../../public/cs-icon.png';
@@ -260,9 +260,8 @@ class Stock extends Component {
 
     return (<Grid>
       <Row>
-        { boardToggleWrapper }
-        { window.innerWidth >= 768 ? [dateSelector, chartTypeSelector] :
-          [chartTypeSelector, dateSelector] }
+        { window.innerWidth >= 768 ? [boardToggleWrapper, dateSelector] : [dateSelector, boardToggleWrapper] }
+        { chartTypeSelector }
       </Row>
     </Grid>);
   }
