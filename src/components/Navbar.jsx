@@ -3,6 +3,7 @@ import logo from '../../public/logo2.png';
 import { Container } from 'flux/utils';
 import CurrentUserStore from '../stores/CurrentUserStore';
 import FirebaseStore from '../stores/FirebaseStore';
+import { Link } from 'react-router';
 import { Navbar as RBNavbar, Button, Collapse }  from 'react-bootstrap';
 
 class Navbar extends Component {
@@ -86,16 +87,18 @@ class Navbar extends Component {
       <Collapse transitionAppear={ true }
                 in={ this.state.showNavbar }
                 timeout={ 1000 }>
+        <div>
                 {/*<!-- navbar begins -->*/}
         <RBNavbar fixedTop={true} className="navBG">
             <RBNavbar.Header>
               <RBNavbar.Brand>
-                <a href="/welcome">
+                <Link to="/welcome">
                   <img src={logo} className="icon" alt="Plocks logo"/>
-                </a>
-                <a className="page-scroll" href="./">
-                  <i className="fa fa-play-circle"></i> <span className="light title-font">PLOCKS</span>
-                </a>
+                </Link>
+                {" "}
+                <Link to="/welcome" className="page-scroll" >
+                  <span className="light title-font">PLOCKS</span>
+                </Link>
               </RBNavbar.Brand>
               <RBNavbar.Toggle />
             </RBNavbar.Header>
@@ -106,6 +109,7 @@ class Navbar extends Component {
             </RBNavbar.Collapse>
           {/*<!-- /.navbar-collapse -->*/}
         </RBNavbar>
+        </div>
       </Collapse>
     )
   }
