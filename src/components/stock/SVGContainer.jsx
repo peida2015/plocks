@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Linegraph from './Linegraph';
 import Candlestick from './Candlestick';
 import Axes from './Axes';
+import EditLayer from './EditLayer';
 import * as d3 from 'd3';
 
 class SVG extends Component {
@@ -97,11 +98,23 @@ class SVG extends Component {
     let pctChange = change/stockData[0].open;
     let symbolPos = this.props.width > 600 ? 0.4 : 0.3;
 
+    var props = {
+      xScale: this.xScale,
+      yScale: this.yScale,
+      x: this.xMargin,
+      y: this.props.height - (this.props.height > 500 ? 2*this.yMargin : this.yMargin),
+      xMargin: this.xMargin,
+      yMargin: this.yMargin,
+      height: this.yAxisLength,
+      width: this.props.width - 2*this.xMargin
+    }
+
+
     return (
       <div className="centered-block">
         <svg width={ this.props.width + "px" }
               height={ this.props.height + "px" }>
-          <rect x="0" y="0" 
+          <rect x="0" y="0"
                 width={ this.props.width }
                 height={ this.props.height }
                 style={ { fill: "white" } }/>
@@ -114,15 +127,10 @@ class SVG extends Component {
                 <tspan>{ this.props.stockData[0].symbol }</tspan>
                 <tspan dx="3em">{ d3.format('+.2%')(pctChange) }</tspan>
           </text>
-          <Axes xScale={ this.xScale }
-                yScale={ this.yScale }
-                x={ this.xMargin }
-                y={ this.props.height - (this.props.height > 500 ? 2*this.yMargin : this.yMargin) }
-                xMargin={ this.xMargin }
-                yMargin={ this.yMargin }
-                height={ this.yAxisLength }
-                width={ this.props.width - 2*this.xMargin }/>
+          <Axes { ...props }/>
           { graph }
+          <EditLayer { ...props }
+                    editControls={ this.props.editControls }/>
         </svg>
       </div>
     )
