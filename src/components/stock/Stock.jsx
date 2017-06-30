@@ -8,11 +8,12 @@ import StockActions from '../../actions/StockActions';
 import SVG from './SVGContainer';
 import Timeline from './Timeline';
 import ContainedModal from './ContainedModal';
-import { Button, Navbar, InputGroup, Grid, Row, Col, Glyphicon, Collapse, ButtonToolbar, OverlayTrigger, Popover } from 'react-bootstrap';
+import { Button, Navbar, InputGroup, Grid, Row, Col, Glyphicon, ButtonToolbar, OverlayTrigger, Popover } from 'react-bootstrap';
 import * as d3 from 'd3';
 import lgIcon from '../../../public/lg-icon.png';
 import csIcon from '../../../public/cs-icon.png';
 import sliderIcon from '../../../public/slider.png';
+import drawLineIcon from '../../../public/stock_draw-line.png';
 import { svgString2Image, getSVGString } from '../../Utils/ExportImg';
 
 class Stock extends Component {
@@ -37,13 +38,15 @@ class Stock extends Component {
     this.buildDateRangeSelector = this.buildDateRangeSelector.bind(this);
     this.buildChart = this.buildChart.bind(this);
     this.navbarToggleHandler = this.navbarToggleHandler.bind(this);
+    this.toggleEditControls = this.toggleEditControls.bind(this);
 
     // Default height and width
     this.state = {
       width: 1000,
       height: 400,
       timescale: null,
-      chartType: "candlestick"
+      chartType: "candlestick",
+      editControls: null
     }
   }
 
@@ -131,7 +134,8 @@ class Stock extends Component {
           <SVG stockData={ stockData.toArray() }
             width={ this.state.width }
             height={ this.state.height }
-            chartType={ this.state.chartType }/>)
+            chartType={ this.state.chartType }
+            editControls={ this.state.editControls }/>)
     } else {
       cardContent = (<ContainedModal symbol={ symbol }/>)
     }
@@ -207,11 +211,11 @@ class Stock extends Component {
     let dateSelector = this.buildDateRangeSelector();
 
     let toolIcons = (<Popover>
-        <ButtonToolbar>
-          <Button>B1</Button>
-          <Button>B2</Button>
-          <Button>B3</Button>
-          <Button>B1</Button>
+        <ButtonToolbar onClick={ this.toggleEditControls }>
+          <Button name="freeDrawing"><Glyphicon glyph="pencil"/></Button>
+          <Button name="drawLine" style={ { padding: "3px 6px" } }>
+            <img src={ drawLineIcon }width="25" role="presentation"/>
+          </Button>
         </ButtonToolbar>
     </Popover>)
 
@@ -334,6 +338,12 @@ class Stock extends Component {
 
     svgString2Image(svgString, svg.width.baseVal.value,
                   svg.height.baseVal.value, 'png', handleImageBlob);
+  }
+
+  toggleEditControls(evt) {
+    this.setState({
+      editControls: evt.target.name
+    });
   }
 
   render () {
