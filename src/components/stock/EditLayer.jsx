@@ -1,18 +1,25 @@
 import React, { Component } from 'react';
+import * as d3 from 'd3';
 import { List } from 'immutable';
 import SVGStraightLine from './SVGStraightLine';
 
 class EditLayer extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
 
     this.buildLines = this.buildLines.bind(this);
     this.setPointHandler = this.setPointHandler.bind(this);
     this.freeDrawingHandler = this.freeDrawingHandler.bind(this);
     this.toggleClickedCircle = this.toggleClickedCircle.bind(this);
     this.circleUpdatePosition = this.circleUpdatePosition.bind(this);
+    this.addSketchPoint = this.addSketchPoint.bind(this);
+    this.endSketch = this.endSketch.bind(this);
+    this.buildFreedrawingSegments = this.buildFreedrawingSegments.bind(this);
 
     this.state = {
+      linegraphInstance: d3.line()
+                            .x(d => d.x)
+                            .y(d=> d.y),
       clickedPointIndex: null,
       lines: List(),
       freeDrawing: List(),
@@ -22,20 +29,26 @@ class EditLayer extends Component {
 
   componentDidUpdate() {
     var editDetectArea = document.getElementById("editDetectArea");
+
+    // Detach all old listeners before adding new ones.
+    editDetectArea.removeEventListener('mousedown', this.freeDrawingHandler);
+    editDetectArea.removeEventListener('mouseup', this.endSketch);
+    editDetectArea.removeEventListener('click', this.setPointHandler);
+
     switch (this.props.editControls) {
       case "drawLine":
         editDetectArea.addEventListener("click", this.setPointHandler);
         break;
 
       case "freeDrawing":
-        editDetectArea.addEventListener('mousemove', this.freeDrawingHandler);
+        editDetectArea.addEventListener('mousedown', this.freeDrawingHandler);
+        editDetectArea.addEventListener('mouseup', this.endSketch);
         break;
 
       default:
         break;
     }
   }
-
 
   buildLines() {
     if (this.state.lines.size > 0) {
@@ -82,6 +95,24 @@ class EditLayer extends Component {
 
       return lines;
     } else return null
+  }
+
+  buildFreedrawingSegments() {
+    var linegraph = this.state.linegraphInstance;
+
+    var segments = this.state.freeDrawing.toArray().map((segment)=> {
+      let path = typeof segment === "string" ? segment : linegraph(segment);
+      return (<path className="unselectable"
+                    key={ `segment-${path}` }
+                    d={ path }
+                    fill="none"
+                    strokeWidth="2"
+                    stroke="green"/>)
+    });
+
+    return (<g className="free-draw-segments">
+      { segments }
+    </g>)
   }
 
   setPointHandler(evt) {
@@ -154,19 +185,59 @@ class EditLayer extends Component {
   }
 
   freeDrawingHandler(evt) {
-    debugger
+    evt.target.addEventListener('mousemove', this.addSketchPoint);
+    this.setState({
+      freeDrawingActive: true
+    })
+  }
+
+  addSketchPoint(evt) {
+    let editDetectAreaRect = document.getElementById('editDetectArea')
+                              .getBoundingClientRect();
+
+    let point = {
+      x: evt.clientX - editDetectAreaRect.left,
+      y: evt.clientY - editDetectAreaRect.top
+    }
+
+    if (this.state.freeDrawing.size === 0 || typeof this.state.freeDrawing.last() === "string") {
+      this.setState({
+        freeDrawing: this.state.freeDrawing.push([point])
+      })
+    } else {
+      let lastIdx = this.state.freeDrawing.size-1;
+      this.setState({
+        freeDrawing: this.state.freeDrawing
+                    .update(lastIdx, arr => arr.concat([point]))
+      })
+    }
+  }
+
+  endSketch(evt) {
+    evt.target.removeEventListener('mousemove', this.addSketchPoint);
+
+    // Convert segment into path string.
+    let lastIdx = this.state.freeDrawing.size - 1;
+
+    this.setState({
+      freeDrawing: this.state.freeDrawing
+          .update(lastIdx, seg => this.state.linegraphInstance(seg))
+    })
   }
 
   render() {
     let lines = this.buildLines();
+    let freeDrawing = this.buildFreedrawingSegments();
     let xRange = this.props.xScale.range();
 
     return (
       <g name="editLayer"
         transform={ `translate(${this.props.xMargin}, ${this.props.yMargin})`}>
+        { freeDrawing }
         <rect dx="0" dy="0"
               id="editDetectArea"
               name="editDetectArea"
+              className="unselectable"
               width={ xRange[xRange.length-1] }
               height={ this.props.yScale.range()[0] }
               fill="transparent"
