@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { List } from 'immutable';
+import SVGStraightLine from './SVGStraightLine';
 
 class EditLayer extends Component {
   constructor() {
@@ -48,8 +49,8 @@ class EditLayer extends Component {
 
       var that = this;
 
-      let points = this.state.lines.toArray().map((line, idx1)=> {
-        return line.map((point, idx2)=> {
+      let lines = this.state.lines.toArray().map((pointPair, idx1)=> {
+        let points = pointPair.map((point, idx2)=> {
           var x = xScale(point.x),
               y = yScale(point.y);
 
@@ -70,40 +71,46 @@ class EditLayer extends Component {
               cy={ yScale(point.y) }/>)
           } else return null;
         })
-      }).reduce((accum, circles)=>{
-        if (circles[0]) accum.push(circles[0])
-        if (circles[1]) accum.push(circles[1])
-        return accum
-      }, []);
 
-      return points;
+        let line = (<SVGStraightLine { ...that.props }
+          pointPair={ pointPair }/>)
+        return (<g key={ `SL-${idx1}` }>
+          { points }
+          { line }
+        </g>)
+      })
+
+      return lines;
     } else return null
   }
 
   setPointHandler(evt) {
-    // Push each pair of x, y coordinates
-    let x = evt.offsetX;
-    let y = evt.offsetY;
-    let xInverted = this.props.xScale.invert(x);
-    let yInverted = this.props.yScale.invert(y);
-    var point = {
-      x: xInverted,
-      y: yInverted
-    };
+    let secondLine = this.state.lines.get(1);
+    if (!secondLine || (secondLine && secondLine.length < 2)) {
+      // Push each pair of x, y coordinates
+      let x = evt.offsetX;
+      let y = evt.offsetY;
+      let xInverted = this.props.xScale.invert(x);
+      let yInverted = this.props.yScale.invert(y);
+      var point = {
+        x: xInverted,
+        y: yInverted
+      };
 
-    var currLine = this.state.lines.last();
+      var currLine = this.state.lines.last();
 
-    if (currLine && currLine.length === 1) {
-      let tempLineArr = this.state.lines.pop();
-      currLine.push(point);
-      this.setState({
-        lines: tempLineArr.push(currLine)
-      })
-    } else {
-      currLine = [point]
-      this.setState({
-        lines: this.state.lines.push(currLine)
-      });
+      if (currLine && currLine.length === 1) {
+        let tempLineArr = this.state.lines.pop();
+        currLine.push(point);
+        this.setState({
+          lines: tempLineArr.push(currLine)
+        })
+      } else {
+        currLine = [point]
+        this.setState({
+          lines: this.state.lines.push(currLine)
+        });
+      }
     }
   }
 
@@ -123,10 +130,11 @@ class EditLayer extends Component {
   }
 
   circleUpdatePosition(evt) {
-    let parentRect = evt.target.parentElement.getBoundingClientRect();
+    // Get boundingClientRect of the editDetectArea
+    let editDetectAreaRect = document.getElementById('editDetectArea').getBoundingClientRect();
 
-    let x = evt.clientX - parentRect.x;
-    let y = evt.clientY - parentRect.y;
+    let x = evt.clientX - editDetectAreaRect.x;
+    let y = evt.clientY - editDetectAreaRect.y;
 
     let xInverted = this.props.xScale.invert(x);
     let yInverted = this.props.yScale.invert(y);
