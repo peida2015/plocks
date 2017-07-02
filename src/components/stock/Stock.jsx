@@ -212,8 +212,12 @@ class Stock extends Component {
 
     let toolIcons = (<Popover>
         <ButtonToolbar onClick={ this.toggleEditControls }>
-          <Button name="freeDrawing"><Glyphicon glyph="pencil"/></Button>
-          <Button name="drawLine" style={ { padding: "3px 6px" } }>
+          <Button name="freeDrawing"
+                  bsStyle={ this.state.editControls === "freeDrawing" ? "success" : null }>
+                  <Glyphicon glyph="pencil"/>
+          </Button>
+          <Button name="drawLine" style={ { padding: "3px 6px" } }
+                  bsStyle={ this.state.editControls === "drawLine" ? "success" : null }>
             <img src={ drawLineIcon }width="25" role="presentation"/>
           </Button>
         </ButtonToolbar>
