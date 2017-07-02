@@ -99,7 +99,8 @@ class Timeline extends Component {
       borderBottom: "15px solid transparent",
       borderLeft: "15px solid transparent",
       borderRight: "15px solid transparent",
-      top: "0px"
+      top: "0px",
+      cursor: "ew-resize"
     }
 
     let shadeboxStyle = {
@@ -108,7 +109,8 @@ class Timeline extends Component {
       width: `${ this.state.handle2Pos - this.state.handle1Pos }px`,
       left: `${ this.state.handle1Pos }px`,
       background: "black",
-      opacity: "0.4"
+      opacity: "0.4",
+      cursor: "grab"
     }
 
     return (
