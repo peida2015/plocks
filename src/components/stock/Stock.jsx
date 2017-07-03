@@ -220,6 +220,10 @@ class Stock extends Component {
                   bsStyle={ this.state.editControls === "drawLine" ? "success" : null }>
             <img src={ drawLineIcon }width="25" role="presentation"/>
           </Button>
+          <Button name="erase"
+                  bsStyle={ this.state.editControls === "erase" ? "danger" : null }>
+            <Glyphicon glyph="erase" />
+          </Button>
         </ButtonToolbar>
     </Popover>)
 

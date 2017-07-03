@@ -15,6 +15,7 @@ class EditLayer extends Component {
     this.addSketchPoint = this.addSketchPoint.bind(this);
     this.endSketch = this.endSketch.bind(this);
     this.buildFreedrawingSegments = this.buildFreedrawingSegments.bind(this);
+    this.eraseLast = this.eraseLast.bind(this);
 
     this.state = {
       linegraphInstance: d3.line()
@@ -43,6 +44,11 @@ class EditLayer extends Component {
       case "freeDrawing":
         editDetectArea.addEventListener('mousedown', this.freeDrawingHandler);
         editDetectArea.addEventListener('mouseup', this.endSketch);
+        break;
+
+      case "erase":
+        let eraseButton = document.getElementsByName('erase')[0];
+        eraseButton.addEventListener('click', this.eraseLast, true);
         break;
 
       default:
@@ -142,6 +148,7 @@ class EditLayer extends Component {
           lines: this.state.lines.push(currLine)
         });
       }
+      this.setState({ lastEdit: this.state.lastEdit.push("drawLine") })
     }
   }
 
@@ -221,8 +228,28 @@ class EditLayer extends Component {
 
     this.setState({
       freeDrawing: this.state.freeDrawing
-          .update(lastIdx, seg => this.state.linegraphInstance(seg))
+          .update(lastIdx, seg => this.state.linegraphInstance(seg)),
+      lastEdit: this.state.lastEdit.push("freeDrawing")
     })
+  }
+
+  eraseLast(evt) {
+    if (this.state.lastEdit.last()) {
+      switch (this.state.lastEdit.last()) {
+        case "drawLine":
+        this.setState({ lines: this.state.lines.pop() })
+        break;
+
+        case "freeDrawing":
+        this.setState({ freeDrawing: this.state.freeDrawing.pop() })
+        break;
+
+        default:
+        break;
+      }
+
+      this.setState({ lastEdit: this.state.lastEdit.pop() })
+    }
   }
 
   render() {
