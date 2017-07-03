@@ -224,6 +224,10 @@ class Stock extends Component {
                   bsStyle={ this.state.editControls === "erase" ? "danger" : null }>
             <Glyphicon glyph="erase" />
           </Button>
+          <Button name="eraseAll"
+                  bsStyle={ this.state.editControls === "eraseAll" ? "danger" : null }>
+            <Glyphicon glyph="trash" />
+          </Button>
         </ButtonToolbar>
     </Popover>)
 
