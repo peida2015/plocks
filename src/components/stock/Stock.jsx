@@ -8,7 +8,7 @@ import StockActions from '../../actions/StockActions';
 import SVG from './SVGContainer';
 import Timeline from './Timeline';
 import ContainedModal from './ContainedModal';
-import { Button, Navbar, InputGroup, Grid, Row, Col, Glyphicon, ButtonToolbar, OverlayTrigger, Popover } from 'react-bootstrap';
+import { Button, Navbar, InputGroup, Grid, Row, Col, Glyphicon, ButtonToolbar, OverlayTrigger, Popover, Tooltip } from 'react-bootstrap';
 import * as d3 from 'd3';
 import lgIcon from '../../../public/lg-icon.png';
 import csIcon from '../../../public/cs-icon.png';
@@ -212,22 +212,34 @@ class Stock extends Component {
 
     let toolIcons = (<Popover>
         <ButtonToolbar onClick={ this.toggleEditControls }>
-          <Button name="freeDrawing"
+          <OverlayTrigger placement="top"
+                  overlay={ <Tooltip>Free-style doodling</Tooltip> }>
+            <Button name="freeDrawing"
                   bsStyle={ this.state.editControls === "freeDrawing" ? "success" : null }>
-                  <Glyphicon glyph="pencil"/>
-          </Button>
-          <Button name="drawLine" style={ { padding: "3px 6px" } }
+                    <Glyphicon glyph="pencil"/>
+                </Button>
+          </OverlayTrigger>
+          <OverlayTrigger placement="top"
+                  overlay={ <Tooltip>Click to set points to draw up to 2 trendlines</Tooltip> }>
+            <Button name="drawLine" style={ { padding: "3px 6px" } }
                   bsStyle={ this.state.editControls === "drawLine" ? "success" : null }>
-            <img src={ drawLineIcon }width="25" role="presentation"/>
-          </Button>
-          <Button name="erase"
+                  <img src={ drawLineIcon }width="25" role="presentation"/>
+            </Button>
+          </OverlayTrigger>
+          <OverlayTrigger placement="top"
+                  overlay={ <Tooltip>Click to erase last addition when red</Tooltip> }>
+            <Button name="erase"
                   bsStyle={ this.state.editControls === "erase" ? "danger" : null }>
-            <Glyphicon glyph="erase" />
-          </Button>
-          <Button name="eraseAll"
+                  <Glyphicon glyph="erase" />
+            </Button>
+          </OverlayTrigger>
+          <OverlayTrigger placement="top"
+                  overlay={ <Tooltip>Click to start over when red</Tooltip> }>
+            <Button name="eraseAll"
                   bsStyle={ this.state.editControls === "eraseAll" ? "danger" : null }>
-            <Glyphicon glyph="trash" />
-          </Button>
+                  <Glyphicon glyph="trash" />
+            </Button>
+          </OverlayTrigger>
         </ButtonToolbar>
     </Popover>)
 
