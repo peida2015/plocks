@@ -35,8 +35,8 @@ class EditLayer extends Component {
     editDetectArea.removeEventListener('mousedown', this.freeDrawingHandler);
     editDetectArea.removeEventListener('mouseup', this.endSketch);
     editDetectArea.removeEventListener('click', this.setPointHandler);
-    let eraseButton = document.getElementsByName('erase')[0];
-    eraseButton.removeEventListener('click', this.eraseLast);
+    var eraseButton = document.getElementsByName('erase')[0];
+    if (eraseButton) eraseButton.removeEventListener('click', this.eraseLast);
 
     switch (this.props.editControls) {
       case "drawLine":
