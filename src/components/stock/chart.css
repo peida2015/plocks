@@ -112,13 +112,13 @@ text.symbol:hover {
 }
 
 .gain {
-  stroke: black;
-  fill: lightgreen;
+  fill: none;
+  stroke: lightgreen;
 }
 
 .loss {
-  stroke: black;
-  fill: red;
+  fill: none;
+  stroke: red;
 }
 
 
@@ -163,7 +163,7 @@ rect.icon-bg.selected {
   fill: forestgreen;
 }
 
-text.neg {
+.neg {
   fill: red;
 }
 

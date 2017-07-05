@@ -22,7 +22,7 @@ class Candlestick extends Component {
             y2={ yScale(d.low) } />
 
           // Draw candles
-          <rect className={ d.close-d.open >= 0 ? "gain" : "loss" }
+          <rect className={ d.close-d.open >= 0 ? "pos" : "neg" }
                 width={ candleWidth }
                 height={ Math.abs(yScale(d.open)-yScale(d.close)) }
                 x={ xScale(d.tradingDay)-candleWidth/2 }

@@ -16,7 +16,12 @@ class Linegraph extends Component {
           .x((d)=> { return this.props.xScale(d.tradingDay); })
           .y((d)=> { return this.props.yScale(d.open); });
 
-    return (<path d={ linegraph(this.props.stockData) } />);
+    let length = this.props.stockData.length;
+
+    let pos = this.props.stockData[length-1].open > this.props.stockData[0].open;
+
+    return (<path className={ pos ? "gain" : "loss"}
+                  d={ linegraph(this.props.stockData) } />);
   }
 
   mouseOverListener(evt) {
