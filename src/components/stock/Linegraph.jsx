@@ -108,7 +108,7 @@ class Linegraph extends Component {
   render () {
     let linegraph = this.buildLinegraph.apply(this);
     let xRange = this.props.xScale.range();
-    let layOverLines = this.buildTradingDayOverlay.apply(this);
+    let layOverLines = this.props.showLayoverLines ? this.buildTradingDayOverlay.apply(this) : null;
 
     return (
       <g  className="line"

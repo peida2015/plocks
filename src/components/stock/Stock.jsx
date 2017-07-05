@@ -42,6 +42,7 @@ class Stock extends Component {
 
     // Default height and width
     this.state = {
+      showLayoverLines: true,
       width: 1000,
       height: 400,
       timescale: null,
@@ -135,7 +136,8 @@ class Stock extends Component {
             width={ this.state.width }
             height={ this.state.height }
             chartType={ this.state.chartType }
-            editControls={ this.state.editControls }/>)
+            editControls={ this.state.editControls }
+            showLayoverLines={ this.state.showLayoverLines }/>)
     } else {
       cardContent = (<ContainedModal symbol={ symbol }/>)
     }
@@ -365,9 +367,18 @@ class Stock extends Component {
   }
 
   toggleEditControls(evt) {
+    // When clicking on some icons, evt.target is different accross browsers.  Get the button element
+    let target = evt.target.name && evt.target.name.length > 0 ? evt.target : evt.target.parentElement;
+
     this.setState({
-      editControls: evt.target.name
+      editControls: target.name
     });
+
+    if (["drawLine", "freeDrawing"].includes(target.name)) {
+      this.setState({ showLayoverLines: false })
+    } else {
+      this.setState({ showLayoverLines: true })
+    }
   }
 
   render () {

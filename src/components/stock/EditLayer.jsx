@@ -198,9 +198,6 @@ class EditLayer extends Component {
 
   freeDrawingHandler(evt) {
     evt.target.addEventListener('mousemove', this.addSketchPoint);
-    this.setState({
-      freeDrawingActive: true
-    })
   }
 
   addSketchPoint(evt) {
@@ -273,6 +270,7 @@ class EditLayer extends Component {
               width={ xRange[xRange.length-1] }
               height={ this.props.yScale.range()[0] }
               fill="transparent"
+              pointerEvents={ this.props.showLayoverLines ? "none" : "all"}
               />
         { lines }
       </g>)

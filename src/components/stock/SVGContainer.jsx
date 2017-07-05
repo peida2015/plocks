@@ -82,7 +82,8 @@ class SVG extends Component {
 
     var merged = { ...this.props, ...extraProps };
     if (this.props.chartType === "linegraph") {
-      return (<Linegraph { ...merged } />);
+      return (<Linegraph { ...merged }
+                showLayoverLines={ this.props.showLayoverLines }/>);
     } else {
       return (<Candlestick { ...merged } />);
     }
@@ -130,7 +131,8 @@ class SVG extends Component {
           <Axes { ...props }/>
           { graph }
           <EditLayer { ...props }
-                    editControls={ this.props.editControls }/>
+                    editControls={ this.props.editControls }
+                    showLayoverLines={ this.props.showLayoverLines }/>
         </svg>
       </div>
     )
