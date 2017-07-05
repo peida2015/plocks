@@ -20,8 +20,28 @@ class Linegraph extends Component {
 
     let pos = this.props.stockData[length-1].open > this.props.stockData[0].open;
 
-    return (<path className={ pos ? "gain" : "loss"}
-                  d={ linegraph(this.props.stockData) } />);
+    let leftEndPoint = {
+      tradingDay: this.props.stockData[0].tradingDay,
+      open: this.props.yScale.domain()[0]
+    }
+
+    let rightEndPoint = {
+      tradingDay: this.props.stockData[length-1].tradingDay,
+      open: this.props.yScale.domain()[0]
+    }
+
+    let shadeData = [leftEndPoint, ...this.props.stockData, rightEndPoint];
+
+
+    return (<g>
+              <path className={ pos ? "gain" : "loss"}
+                  d={ linegraph(this.props.stockData) } />
+              <path className="undershade"
+                  d={ linegraph(shadeData) }
+                  stroke="none"
+                  fill={ pos ? "lightgreen" : "red" }
+                  fillOpacity="0.1"/>
+            </g>);
   }
 
   mouseOverListener(evt) {
