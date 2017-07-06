@@ -382,7 +382,8 @@ class Stock extends Component {
 
     switch(target.name) {
       case "layover":
-        this.setState({ showLayoverLines : !this.state.showLayoverLines })
+        this.setState({ showLayoverLines : !this.state.showLayoverLines &&
+                                this.state.chartType === "linegraph" })
         break;
 
       case "erase":
