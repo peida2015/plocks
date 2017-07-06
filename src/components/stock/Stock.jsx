@@ -172,7 +172,7 @@ class Stock extends Component {
     StockActions.getFilteredPrices(stockData);
   }
 
-  bsDate = function (data, date) {
+  bsDate(data, date) {
     // A number is returned for any date input.
     if (data.length <= 1) { return 0;  };
 
@@ -240,6 +240,13 @@ class Stock extends Component {
             <Button name="eraseAll"
                   bsStyle={ this.state.editControls === "eraseAll" ? "danger" : null }>
                   <Glyphicon glyph="trash" />
+            </Button>
+          </OverlayTrigger>
+          <OverlayTrigger placement="top"
+                  overlay={ <Tooltip>Toggle layover lines</Tooltip> }>
+            <Button name="layover"
+                  bsStyle={ this.state.showLayoverLines ? "info" : null }>
+                  <Glyphicon glyph="asterisk" />
             </Button>
           </OverlayTrigger>
         </ButtonToolbar>
@@ -370,14 +377,14 @@ class Stock extends Component {
     // When clicking on some icons, evt.target is different accross browsers.  Get the button element
     let target = evt.target.name && evt.target.name.length > 0 ? evt.target : evt.target.parentElement;
 
-    this.setState({
-      editControls: target.name
-    });
+    if (target.name !== "layover") {
+      let currControl = target.name === this.state.editControls ? null : target.name;
 
-    if (["drawLine", "freeDrawing"].includes(target.name)) {
-      this.setState({ showLayoverLines: false })
+      this.setState({
+        editControls: currControl
+      })
     } else {
-      this.setState({ showLayoverLines: true })
+      this.setState({ showLayoverLines : !this.state.showLayoverLines })
     }
   }
 
