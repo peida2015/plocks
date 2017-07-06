@@ -42,7 +42,7 @@ class Stock extends Component {
 
     // Default height and width
     this.state = {
-      showLayoverLines: true,
+      showLayoverLines: false,
       width: 1000,
       height: 400,
       timescale: null,
@@ -155,7 +155,8 @@ class Stock extends Component {
   }
 
   setCS() {
-    browserHistory.replace(`/stock/${this.props.params.stock}/candlestick`)
+    browserHistory.replace(`/stock/${this.props.params.stock}/candlestick`);
+    this.setState({ showLayoverLines: false })
   }
 
   backToMain() {
@@ -212,39 +213,40 @@ class Stock extends Component {
     let candlestickActive = this.state.chartType === "candlestick";
     let dateSelector = this.buildDateRangeSelector();
 
-    let toolIcons = (<Popover>
+    let toolIcons = (<Popover id="toolbar">
         <ButtonToolbar onClick={ this.toggleEditControls }>
           <OverlayTrigger placement="top"
-                  overlay={ <Tooltip>Free-style doodling</Tooltip> }>
+                  overlay={ <Tooltip id="btn1">Free-style doodling</Tooltip> }>
             <Button name="freeDrawing"
                   bsStyle={ this.state.editControls === "freeDrawing" ? "success" : null }>
                     <Glyphicon glyph="pencil"/>
                 </Button>
           </OverlayTrigger>
           <OverlayTrigger placement="top"
-                  overlay={ <Tooltip>Click to set points to draw up to 2 trendlines</Tooltip> }>
+                  overlay={ <Tooltip id="btn2">Click to set points to draw up to 2 trendlines</Tooltip> }>
             <Button name="drawLine" style={ { padding: "3px 6px" } }
                   bsStyle={ this.state.editControls === "drawLine" ? "success" : null }>
                   <img src={ drawLineIcon }width="25" role="presentation"/>
             </Button>
           </OverlayTrigger>
           <OverlayTrigger placement="top"
-                  overlay={ <Tooltip>Click to erase last addition when red</Tooltip> }>
+                  overlay={ <Tooltip id="btn3">Click to erase last addition when red</Tooltip> }>
             <Button name="erase"
                   bsStyle={ this.state.editControls === "erase" ? "danger" : null }>
                   <Glyphicon glyph="erase" />
             </Button>
           </OverlayTrigger>
           <OverlayTrigger placement="top"
-                  overlay={ <Tooltip>Click to start over when red</Tooltip> }>
+                  overlay={ <Tooltip id="btn4">Click to start over when red</Tooltip> }>
             <Button name="eraseAll"
                   bsStyle={ this.state.editControls === "eraseAll" ? "danger" : null }>
                   <Glyphicon glyph="trash" />
             </Button>
           </OverlayTrigger>
           <OverlayTrigger placement="top"
-                  overlay={ <Tooltip>Toggle layover lines</Tooltip> }>
+                  overlay={ <Tooltip id="btn5">Toggle layover lines</Tooltip> }>
             <Button name="layover"
+                  disabled={ this.state.chartType === "candlestick" }
                   bsStyle={ this.state.showLayoverLines ? "info" : null }>
                   <Glyphicon glyph="asterisk" />
             </Button>
@@ -276,7 +278,8 @@ class Stock extends Component {
                       style={ { padding: "3px 6px" } }/>
             </Col>)
 
-    let toolbarToggleWrapper = (<Col xs={7} sm={2}>
+    let toolbarToggleWrapper = (<Col xs={7} sm={2}
+                                    key="toolbarToggleWrapper">
         <Grid>
           <Row>
             { toolbarButton }
@@ -377,14 +380,25 @@ class Stock extends Component {
     // When clicking on some icons, evt.target is different accross browsers.  Get the button element
     let target = evt.target.name && evt.target.name.length > 0 ? evt.target : evt.target.parentElement;
 
-    if (target.name !== "layover") {
-      let currControl = target.name === this.state.editControls ? null : target.name;
+    switch(target.name) {
+      case "layover":
+        this.setState({ showLayoverLines : !this.state.showLayoverLines })
+        break;
 
-      this.setState({
-        editControls: currControl
-      })
-    } else {
-      this.setState({ showLayoverLines : !this.state.showLayoverLines })
+      case "erase":
+        this.setState({ editControls: "erase" });
+        break;
+
+      case "drawLine":
+      case "freeDrawing":
+      case "eraseAll":
+        let currControl = target.name === this.state.editControls ? null : target.name;
+
+        this.setState({ editControls: currControl });
+        break;
+
+      default:
+        break
     }
   }
 
