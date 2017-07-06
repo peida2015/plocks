@@ -34,6 +34,8 @@ class EditLayer extends Component {
     // Detach all old listeners before adding new ones.
     editDetectArea.removeEventListener('mousedown', this.freeDrawingHandler);
     editDetectArea.removeEventListener('mouseup', this.endSketch);
+    editDetectArea.removeEventListener('touchstart', this.freeDrawingHandler);
+    editDetectArea.removeEventListener('touchend', this.endSketch);
     editDetectArea.removeEventListener('click', this.setPointHandler);
     var eraseButton = document.getElementsByName('erase')[0];
     if (eraseButton) eraseButton.removeEventListener('click', this.eraseLast);
@@ -44,6 +46,8 @@ class EditLayer extends Component {
         break;
 
       case "freeDrawing":
+        editDetectArea.addEventListener('touchstart', this.freeDrawingHandler);
+        editDetectArea.addEventListener('touchend', this.endSketch);
         editDetectArea.addEventListener('mousedown', this.freeDrawingHandler);
         editDetectArea.addEventListener('mouseup', this.endSketch);
         break;
@@ -200,6 +204,7 @@ class EditLayer extends Component {
   }
 
   freeDrawingHandler(evt) {
+    evt.target.addEventListener('touchmove', this.addSketchPoint);
     evt.target.addEventListener('mousemove', this.addSketchPoint);
   }
 
@@ -207,9 +212,12 @@ class EditLayer extends Component {
     let editDetectAreaRect = document.getElementById('editDetectArea')
                               .getBoundingClientRect();
 
+    let x = evt.clientX || evt.touches[0].clientX;
+    let y = evt.clientY || evt.touches[0].clientY;
+
     let point = {
-      x: evt.clientX - editDetectAreaRect.left,
-      y: evt.clientY - editDetectAreaRect.top
+      x: x - editDetectAreaRect.left,
+      y: y - editDetectAreaRect.top
     }
 
     if (this.state.freeDrawing.size === 0 || typeof this.state.freeDrawing.last() === "string") {
