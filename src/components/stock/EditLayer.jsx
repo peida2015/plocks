@@ -130,10 +130,13 @@ class EditLayer extends Component {
     let secondLine = this.state.lines.get(1);
     if (!secondLine || (secondLine && secondLine.length < 2)) {
       // Push each pair of x, y coordinates
-      let x = evt.offsetX;
-      let y = evt.offsetY;
-      let xInverted = this.props.xScale.invert(x);
-      let yInverted = this.props.yScale.invert(y);
+      let x = evt.clientX;
+      let y = evt.clientY;
+      let editDetectAreaRect = document.getElementById('editDetectArea').getBoundingClientRect();
+
+      let xInverted = this.props.xScale.invert(x - editDetectAreaRect.left);
+      let yInverted = this.props.yScale.invert(y - editDetectAreaRect.top);
+
       var point = {
         x: xInverted,
         y: yInverted
