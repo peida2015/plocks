@@ -209,6 +209,7 @@ class EditLayer extends Component {
   }
 
   addSketchPoint(evt) {
+    evt.preventDefault();
     let editDetectAreaRect = document.getElementById('editDetectArea')
                               .getBoundingClientRect();
 
