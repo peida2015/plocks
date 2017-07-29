@@ -4,9 +4,9 @@ class Candlestick extends Component {
   buildCandlestick() {
     var stockData = this.props.stockData;
     let xScale = this.props.xScale,
-        yScale = this.props.yScale;
-
-    let candleWidth = 3;
+        yScale = this.props.yScale,
+        size = stockData.length,
+        candleWidth = Math.max(1, Math.min(10, Math.floor(this.props.width/size)));
 
     return stockData.map((d)=>{
       return (
