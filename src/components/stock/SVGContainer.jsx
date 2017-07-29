@@ -3,6 +3,7 @@ import Linegraph from './Linegraph';
 import Candlestick from './Candlestick';
 import Axes from './Axes';
 import EditLayer from './EditLayer';
+import Barchart from './Barchart';
 import * as d3 from 'd3';
 
 class SVG extends Component {
@@ -52,14 +53,15 @@ class SVG extends Component {
   getYScale() {
     var max = -Infinity;
     var min = Infinity;
+    var maxVol = -Infinity;
+    var minVol = Infinity;
 
     for (var idx = 0; idx < this.props.stockData.length; idx++) {
-      if (this.props.stockData[idx].high > max) {
-          max = this.props.stockData[idx].high;
-      };
-      if (this.props.stockData[idx].low < min) {
-          min = this.props.stockData[idx].low;
-      };
+      let curr = this.props.stockData[idx];
+      if (curr.high > max) max = curr.high;
+      if (curr.low < min) min = curr.low;
+      if (curr.volume > maxVol) maxVol = curr.volume;
+      if (curr.volume < minVol) minVol = curr.volume;
     }
 
     // Determine yAxisLength;
@@ -68,8 +70,13 @@ class SVG extends Component {
                     this.props.height - 2 * this.yMargin;
 
     this.yScale = d3.scaleLinear()
-      .domain([min, max])
+      .domain([min - (max - min) * 0.2, max])
       .range([this.yAxisLength, 0]);
+
+    // Create a separate scale for volume data
+    this.volScale = d3.scaleLinear()
+      .domain([minVol - (maxVol - minVol) * 0.2, maxVol])
+      .range([this.yAxisLength, this.yAxisLength * 0.8]);
   }
 
   buildGraph() {
@@ -129,6 +136,9 @@ class SVG extends Component {
                 <tspan dx="3em">{ d3.format('+.2%')(pctChange) }</tspan>
           </text>
           <Axes { ...props }/>
+          <Barchart { ...props }
+                    stockData={ stockData }
+                    volScale={ this.volScale }/>
           { graph }
           <EditLayer { ...props }
                     editControls={ this.props.editControls }
