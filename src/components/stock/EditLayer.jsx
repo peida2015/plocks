@@ -59,6 +59,7 @@ class EditLayer extends Component {
       case "eraseAll":
         // This will be called until everything is erased.
         this.eraseLast();
+        break;
 
       default:
         break;
@@ -183,11 +184,12 @@ class EditLayer extends Component {
     // Get boundingClientRect of the editDetectArea
     let editDetectAreaRect = document.getElementById('editDetectArea').getBoundingClientRect();
 
-    let x = evt.clientX - editDetectAreaRect.x;
-    let y = evt.clientY - editDetectAreaRect.y;
+    let x = evt.clientX - editDetectAreaRect.left;
+    let y = evt.clientY - editDetectAreaRect.top;
 
     let xInverted = this.props.xScale.invert(x);
     let yInverted = this.props.yScale.invert(y);
+
     var point = {
       x: xInverted,
       y: yInverted
