@@ -8,7 +8,9 @@ nav.navBG {
 
 .full-height {
   /* +/- operators must be surrounded by white-space*/
-  height: calc(98vh - 50px);
+  /*50px for the bottom navbar;
+  16px for the top navbar toggle button*/
+  height: calc(98vh - 50px - 16px);
 }
 
 .top-margin {
