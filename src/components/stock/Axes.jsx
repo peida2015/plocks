@@ -28,7 +28,6 @@ class Axes extends Component {
     path.lineTo(length, 0);
     path.lineTo(length, 3);
     let wide = this.props.width > 500;
-    let tall = this.props.height > 430;
 
     // Generate ticks on x-axis.
     var tickLabel;
@@ -44,7 +43,7 @@ class Axes extends Component {
             x="-10"
             y="0"
             style={{ fontSize: this.fontSize }}>
-            <tspan dy={ tall ? "1.4em" : "-1.4em"}>{ monthFormat(tick) }</tspan>
+            <tspan dy="1.4em">{ monthFormat(tick) }</tspan>
             <tspan x="-0.5em" dy={ "1.4em" }>{ yearFormat(tick) }</tspan>
           </text>
         )
@@ -55,7 +54,7 @@ class Axes extends Component {
         tickLabel = (<text className="date"
                             transform="rotate(-0)"
                             x="-20"
-                            y={ tall ? "1.4em" : "-1.4em"}
+                            y="1.4em"
                             style={{ fontSize: this.fontSize }}>
                             { monthDateFormat(tick) }
                           </text>);
