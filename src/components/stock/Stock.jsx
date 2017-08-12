@@ -8,7 +8,8 @@ import StockActions from '../../actions/StockActions';
 import SVG from './SVGContainer';
 import Timeline from './Timeline';
 import ContainedModal from './ContainedModal';
-import { Button, Navbar, InputGroup, Grid, Row, Col, Glyphicon, ButtonToolbar, OverlayTrigger, Popover, Tooltip } from 'react-bootstrap';
+import NavbarToggleButton from '../NavbarToggleButton';
+import { Button, Navbar, InputGroup, Grid, Row, Col, Glyphicon, ButtonToolbar, OverlayTrigger, Popover, Tooltip, Collapse } from 'react-bootstrap';
 import * as d3 from 'd3';
 import lgIcon from '../../../public/lg-icon.png';
 import csIcon from '../../../public/cs-icon.png';
@@ -39,10 +40,12 @@ class Stock extends Component {
     this.buildChart = this.buildChart.bind(this);
     this.navbarToggleHandler = this.navbarToggleHandler.bind(this);
     this.toggleEditControls = this.toggleEditControls.bind(this);
+    this.toggleShowNavbar = this.toggleShowNavbar.bind(this);
 
     // Default height and width
     this.state = {
       showLayoverLines: false,
+      showBottomNavbar: true,
       width: 1000,
       height: 400,
       timescale: null,
@@ -260,7 +263,8 @@ class Stock extends Component {
             <ButtonToolbar>
               <OverlayTrigger placement="top"
                     trigger="click"
-                    overlay={ toolIcons }>
+                    overlay={ toolIcons }
+                    onClick={ this.overrideBubbling }>
                 <Button>
                   <Glyphicon glyph="edit"/>
                 </Button>
@@ -376,6 +380,10 @@ class Stock extends Component {
                   svg.height.baseVal.value, 'png', handleImageBlob);
   }
 
+  toggleShowNavbar() {
+    this.setState({ showBottomNavbar: !this.state.showBottomNavbar })
+  }
+
   toggleEditControls(evt) {
     // When clicking on some icons, evt.target is different accross browsers.  Get the button element
     let target = evt.target.name && evt.target.name.length > 0 ? evt.target : evt.target.parentElement;
@@ -403,6 +411,10 @@ class Stock extends Component {
     }
   }
 
+  overrideBubbling(evt) {
+    evt.stopPropagation();
+  }
+
   render () {
     let stockChart = this.buildChart();
     let footerContents = this.buildFooter();
@@ -414,12 +426,18 @@ class Stock extends Component {
               { stockChart }
             </div>
           </div>
-          <Navbar fixedBottom
-                  fluid={ true }
-                  onToggle={ this.navbarToggleHandler }
-                  style={{ zIndex: 20 }}>
-              { footerContents }
-          </Navbar>
+          <Collapse in={ this.state.showBottomNavbar }
+                    onClick={ window.screen.height < 560 ? this.toggleShowNavbar : null} >
+            <Navbar fixedBottom
+                    fluid={ true }
+                    onToggle={ this.navbarToggleHandler }
+                    style={{ zIndex: 20 }}>
+                { footerContents }
+            </Navbar>
+          </Collapse>
+          <NavbarToggleButton direction="up"
+                              onClick={ this.toggleShowNavbar }/>
+
           <canvas style={ {display: "none"} }></canvas>
       </div>);
   }
