@@ -3,6 +3,7 @@ import logo from '../../public/logo2.png';
 import { Container } from 'flux/utils';
 import CurrentUserStore from '../stores/CurrentUserStore';
 import FirebaseStore from '../stores/FirebaseStore';
+import NavbarToggleButton from './NavbarToggleButton';
 import { Link } from 'react-router';
 import { Navbar as RBNavbar, Button, Collapse, Glyphicon }  from 'react-bootstrap';
 
@@ -97,17 +98,8 @@ class Navbar extends Component {
           </RBNavbar>
         </div>
       </Collapse>
-        <div>
-          <span className="centered-toggle-button"
-                onClick={ this.toggleShowNavbar } >
-            <Glyphicon glyph="chevron-down"
-                        style={ {
-                          textAlign: "center",
-                          display: "block",
-                          color: "#24a6e8"
-                          } } />
-          </span>
-        </div>
+      <NavbarToggleButton direction="down"
+                          onClick={ this.toggleShowNavbar }/>
       </div>
     )
   }
