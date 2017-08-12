@@ -427,7 +427,7 @@ class Stock extends Component {
             </div>
           </div>
           <Collapse in={ this.state.showBottomNavbar }
-                    onClick={ window.screen.height < 560 ? this.toggleShowNavbar : null} >
+                    onClick={ window.screen.height < 720 ? this.toggleShowNavbar : null} >
             <Navbar fixedBottom
                     fluid={ true }
                     onToggle={ this.navbarToggleHandler }
