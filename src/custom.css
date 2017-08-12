@@ -8,9 +8,16 @@ nav.navBG {
 
 .full-height {
   /* +/- operators must be surrounded by white-space*/
-  /*50px for the bottom navbar;
-  16px for the top navbar toggle button*/
-  height: calc(98vh - 50px - 16px);
+  /* 50px for the bottom navbar;
+     16px for the top navbar toggle button */
+  height: calc(99.8vh - 50px - 16px);
+}
+
+@media(max-height: 560px) {
+  /* subtract twice the height of navbar toggle button */
+  .full-height {
+    height: calc(98vh - 2 * 16px);
+  }
 }
 
 .top-margin {
@@ -28,7 +35,7 @@ nav.navBG {
   margin-right: auto;
   width: 80px;
   display: block;
-  border-radius: 0px 0px 8px 8px;
+
 }
 
 .gsi {
