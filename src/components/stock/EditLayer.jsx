@@ -37,6 +37,8 @@ class EditLayer extends Component {
     editDetectArea.removeEventListener('touchstart', this.freeDrawingHandler);
     editDetectArea.removeEventListener('touchend', this.endSketch);
     editDetectArea.removeEventListener('click', this.setPointHandler);
+    editDetectArea.removeEventListener('mouseout', this.endSketch);
+
     var eraseButton = document.getElementsByName('erase')[0];
     if (eraseButton) eraseButton.removeEventListener('click', this.eraseLast);
 
@@ -50,6 +52,7 @@ class EditLayer extends Component {
         editDetectArea.addEventListener('touchend', this.endSketch);
         editDetectArea.addEventListener('mousedown', this.freeDrawingHandler);
         editDetectArea.addEventListener('mouseup', this.endSketch);
+        editDetectArea.addEventListener('mouseout', this.endSketch);
         break;
 
       case "erase":
@@ -237,16 +240,20 @@ class EditLayer extends Component {
   }
 
   endSketch(evt) {
+
+    evt.target.removeEventListener('touchmove', this.addSketchPoint);
     evt.target.removeEventListener('mousemove', this.addSketchPoint);
 
     // Convert segment into path string.
     let lastIdx = this.state.freeDrawing.size - 1;
 
-    this.setState({
-      freeDrawing: this.state.freeDrawing
-          .update(lastIdx, seg => this.state.linegraphInstance(seg)),
-      lastEdit: this.state.lastEdit.push("freeDrawing")
-    })
+    if (typeof this.state.freeDrawing.last() !== "string") {
+      this.setState({
+        freeDrawing: this.state.freeDrawing
+            .update(lastIdx, seg => this.state.linegraphInstance(seg)),
+        lastEdit: this.state.lastEdit.push("freeDrawing")
+      })
+    }
   }
 
   eraseLast(evt) {
