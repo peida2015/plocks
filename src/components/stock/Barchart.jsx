@@ -21,7 +21,8 @@ class Barchart extends Component {
         };
 
         return (
-          <line  x1={ xScale(d.tradingDay) }
+          <line key={ d.tradingDay.toLocaleDateString() }
+            x1={ xScale(d.tradingDay) }
             x2={ xScale(d.tradingDay) }
             y1={ volScale.range()[0] }
             y2={ volScale(d.volume) }
