@@ -153,11 +153,13 @@ class Stock extends Component {
       </div>);
   }
 
-  setLG() {
+  setLG(evt) {
+    evt.stopPropagation();
     browserHistory.replace(`/stock/${this.props.params.stock}/linegraph`);
   }
 
-  setCS() {
+  setCS(evt) {
+    evt.stopPropagation();
     browserHistory.replace(`/stock/${this.props.params.stock}/candlestick`);
     this.setState({ showLayoverLines: false })
   }
@@ -280,6 +282,7 @@ class Stock extends Component {
                       xsPush={5}
                      smHidden>
               <Navbar.Toggle children={ sliderButton }
+                      onClick={ this.overrideBubbling }
                       style={ { padding: "3px 6px" } }/>
             </Col>)
 
@@ -366,7 +369,8 @@ class Stock extends Component {
     }
   }
 
-  exportImage() {
+  exportImage(evt) {
+    evt.stopPropagation();
     let svg = document.getElementsByTagName('svg')[0];
     let svgString = getSVGString(svg);
 
