@@ -236,7 +236,8 @@ class Stock extends Component {
                   overlay={ <Tooltip id="btn3">Click to erase last addition when red</Tooltip> }>
             <Button name="erase"
                   bsStyle={ this.state.editControls === "erase" ? "danger" : null }>
-                  <Glyphicon glyph="erase" />
+                  <Glyphicon glyph="share-alt"
+                            style={{  transform: "scaleX(-1)"  }}/>
             </Button>
           </OverlayTrigger>
           <OverlayTrigger placement="top"
